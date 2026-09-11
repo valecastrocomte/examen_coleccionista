@@ -1,0 +1,39 @@
+{
+  "name": "examen_coleccionista",
+  "version": "1.0.0",
+  "description": "Sistema de Gestión de Colecciones de Láminas (Hono + Prisma + TypeScript + MySQL)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "bootstrap": "node scripts/copiar-bootstrap.mjs",
+    "postinstall": "npm run bootstrap"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.1",
+    "@hono/zod-validator": "^0.9.1",
+    "@prisma/adapter-mariadb": "^7.10.0",
+    "@prisma/client": "^7.10.0",
+    "bootstrap": "^5.3.8",
+    "ejs": "^3.1.10",
+    "hono": "^4.13.7",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/ejs": "^3.1.5",
+    "@types/node": "^24.13.4",
+    "dotenv": "^17.4.2",
+    "prisma": "^7.10.0",
+    "tsx": "^4.23.13",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.0"
+  },
+  "allowScripts": {
+    "@prisma/engines@7.10.0": true,
+    "esbuild@0.28.2": true,
+    "prisma@7.10.0": true
+  }
+}

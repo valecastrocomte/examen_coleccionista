@@ -1,0 +1,21 @@
+# Dependencias y build
+node_modules/
+dist/
+
+# Configuración local (nunca se versiona)
+.env
+
+# Fotos subidas por el usuario (datos locales)
+uploads/
+
+# Logs y sistema
+*.log
+.DS_Store
+Thumbs.db
+/src/generated/prisma
+
+# Skills de agentes generados por `prisma init` (tooling local, regenerable)
+.claude/
+.windsurf/
+.agents/
+skills-lock.json

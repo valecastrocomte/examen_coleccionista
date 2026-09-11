@@ -1,0 +1,22 @@
+# MySQL 8.x local para desarrollo (equivalente a un MySQL instalado en el SO).
+# Uso: docker compose up -d   →  MySQL en localhost:3306, BD "examen_coleccionista".
+# Las credenciales coinciden con .env.example (root / root).
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: examen-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: examen_coleccionista
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+volumes:
+  mysql-data:

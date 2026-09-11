@@ -2,7 +2,7 @@
 
 Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (Hono + Prisma + TypeScript + MySQL, arquitectura MVC, vistas Bootstrap oscuras).
 
-- **Estado general:** 🔵 En planificación (sin código inicializado).
+- **Estado general:** 🟢 En desarrollo — Fase 0 completada (servidor Hono + MySQL vía Prisma operativos); sigue Fase 1.
 - **Fuente de requisitos:** [`docs/BRIEF.md`](docs/BRIEF.md) — ante cualquier duda, manda el BRIEF.
 
 ---
@@ -11,7 +11,7 @@ Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (H
 
 | Fase | Nombre | Estado |
 |---|---|---|
-| 0 | Setup del proyecto y MySQL | ⬜ Pendiente |
+| 0 | Setup del proyecto y MySQL | ✅ Completada |
 | 1 | Modelo de datos (Prisma) | ⬜ Pendiente |
 | 2 | API REST CRUD (álbumes y láminas) | ⬜ Pendiente |
 | 3 | Interfaces web MVC + Bootstrap | ⬜ Pendiente |
@@ -27,15 +27,16 @@ Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (H
 
 **Objetivo:** servidor Hono en Node con TypeScript y conexión a MySQL vía Prisma.
 
-- [ ] Inicializar proyecto Node + TypeScript (tsconfig estricto, `tsx` para dev).
-- [ ] Instalar dependencias: `hono`, `@hono/node-server`, `prisma`, `@prisma/client`, `zod`, `@hono/zod-validator`, `ejs`, `bootstrap`, `vitest`.
-- [ ] `npx prisma init --datasource-provider mysql` y configurar `DATABASE_URL` en `.env`.
-- [ ] Copiar Bootstrap `dist/` a `public/vendor/bootstrap/` (script `npm run bootstrap`).
-- [ ] Servir `/public/*` y `/uploads/*` con `serveStatic` de `@hono/node-server/serve-static`.
-- [ ] Levantar `npm run dev` y verificar `GET /` → redirige a `/albumes`.
-
+- [x] Inicializar proyecto Node + TypeScript (tsconfig estricto, `tsx` para dev).
+- [x] Instalar dependencias: `hono`, `@hono/node-server`, `prisma`, `@prisma/client`, `zod`, `@hono/zod-validator`, `ejs`, `bootstrap`, `vitest`.
+- [x] `npx prisma init --datasource-provider mysql` y configurar `DATABASE_URL` en `.env`.
+- [x] Copiar Bootstrap `dist/` a `public/vendor/bootstrap/` (script `npm run bootstrap`).
+- [x] Servir `/public/*` y `/uploads/*` con `serveStatic` de `@hono/node-server/serve-static`.
+- [x] Levantar `npm run dev` y verificar `GET /` → redirige a `/albumes`.
 **Cierre:** `npm run dev` levanta el servidor y Prisma conecta a MySQL sin errores.
 **Actualiza:** `README.md` (comandos) · `roadmap.md` (marcar fase).
+
+> **Cierre verificado (2026-09-10):** `npm run dev` y `npm start` levantan el servidor; `SELECT VERSION()` vía Prisma confirma MySQL 8.4.11 en `examen_coleccionista`; `npm test` (smoke) y `npm run build` pasan. MySQL corre con `docker compose up -d` (credenciales en `.env`); nota: Prisma 7 usa `prisma7.config.ts` y adapter `@prisma/adapter-mariadb`.
 
 ---
 

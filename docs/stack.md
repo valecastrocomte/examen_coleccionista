@@ -119,6 +119,8 @@ package.json:
   "prisma": { "seed": "tsx prisma/seed.ts" }
 ```
 
+> Prisma 7 instalado (7.10.0): la conexión se configura en `prisma7.config.ts` (no en el `datasource` del schema) y el cliente se genera en `src/generated/prisma/` con la URL como adapter de drivers (`@prisma/adapter-mariadb`, compatible con MySQL 8; requiere `allowPublicKeyRetrieval=true` en la URL). El seed de Prisma 7 se declara como `migrations.seed` en `prisma7.config.ts` cuando se implemente (Fase 1).
+
 El script `bootstrap` copia `node_modules/bootstrap/dist/` a `public/vendor/bootstrap/` (ver §3). Hasta que exista, la copia se hace manual.
 
 ```ts
