@@ -12,7 +12,7 @@
 | Server HTTP | **@hono/node-server** | 2.0.10 | Adapta la app Hono a HTTP/1.1 de Node |
 | ORM | **Prisma** | 7.x | Schema-first, migraciones versionadas, cliente tipado, seed |
 | Base de datos | **MySQL** | 8.x | Persistencia (requisito del enunciado) |
-| Validación | **Zod** + **@hono/zod-validator** | ≥3.24 (o 4.x) / 0.7.x | Valida body/query/params antes de tocar la BD → 400 con detalle |
+| Validación | **Zod** | ≥3.24 (o 4.x) | Valida body/query/params antes de tocar la BD → 400 con detalle por campo (los controllers hacen `safeParse`; ver §8) |
 | Vistas (MVC) | **EJS** | 3.x | Plantillas HTML server-side: `ejs.renderFile(...)` → `c.html(...)` |
 | UI / CSS | **Bootstrap** | 5.3.x | Estilos y componentes de las vistas; assets locales en `public/vendor/bootstrap/` |
 | Tests | **Vitest** + helper `app.request()` de Hono | 3.x | Tests automatizados de la lógica de negocio (Bloque 3) |
@@ -25,7 +25,7 @@
 - **Hono** sustituye a Spring Web: framework minimalista sobre Web Standards, rápido, con routing por prefijo (`/api`), soporte nativo de `multipart/form-data` (necesario para fotos) y estáticos (`serveStatic`, para `public/` y `uploads/`). Corre sobre Node sin capas extra.
 - **Prisma** sustituye a Spring Data JPA: modelo definido en `prisma/schema.prisma`, generación de migraciones con `prisma migrate dev`, cliente tipado (autocompletado y errores en compilación), soporte maduro de MySQL y seed con `prisma db seed`. La conexión se configura por `DATABASE_URL` en `.env`.
 - **TypeScript estricto** sustituye a Java: contratos de datos explícitos; los modelos Zod generan los tipos y los validan en runtime.
-- **Zod + @hono/zod-validator** aporta la validación de entrada (equivalente a Bean Validation): errores 400 por campo.
+- **Zod** aporta la validación de entrada (equivalente a Bean Validation): los controllers hacen `safeParse` con los esquemas de los models y responden 400 con detalle por campo; el middleware `@hono/zod-validator` se descartó (ver §8).
 - **Vitest** cubre la lógica de negocio del Bloque 3 con tests rápidos que no requieren levantar el servidor.
 - **EJS** implementa las **vistas** del MVC: plantillas simples renderizadas a string y devueltas con `c.html()`; no requiere middleware ni acopla Hono a un runtime concreto.
 - **Bootstrap** aporta la capa de presentación (tablas, tarjetas, formularios, badges de faltantes/repetidas). Se sirve **local** desde `public/vendor/bootstrap/`, sin CDN.
@@ -36,7 +36,7 @@
 ```bash
 # 1) Proyecto base (Node + TS)
 npm init -y
-npm install hono @hono/node-server @prisma/client zod @hono/zod-validator ejs
+npm install hono @hono/node-server @prisma/client zod ejs
 npm install -D prisma typescript tsx @types/node vitest
 
 # Vistas MVC: instalar Bootstrap y copiar dist/ a public/vendor/bootstrap/
@@ -174,6 +174,7 @@ export const listarAlbumes = async (c) => {
 | Storage en la nube (S3) | No aporta valor al entorno del curso; fotos en disco con static files |
 | Handlebars / Pug | EJS es el estándar de facto del MVC server-side en Node y su sintaxis es la más parecida a JSP/Thymeleaf del curso |
 | React / SPA separada | Añade un segundo proyecto sin valor evaluable; el alcance es MVC + Bootstrap servido por el mismo server |
+| @hono/zod-validator (middleware) | Instalado en Fase 0 pero descartado en Fase 2: sus tipos no unifican con handlers nombrados del MVC en Hono 4.13 (obliga a handlers inline); la validación se hace con el mismo Zod en los controllers (`src/lib/validacion.ts`) con los mismos errores 400 por campo |
 
 ---
 

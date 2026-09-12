@@ -1,6 +1,13 @@
 // App Hono: middleware, estáticos y rutas (CONTROLADOR principal).
+// Fase 2: API REST JSON bajo /api/* (BRIEF §8.1) con validación Zod en los
+// controllers y errores uniformes { "error", "detalles" }. La web MVC
+// (c.html) llega en Fase 3.
 import { Hono } from "hono";
+import { HTTPException } from "hono/http-exception";
 import { serveStatic } from "@hono/node-server/serve-static";
+import { ErrorNegocio, errorJson } from "./lib/errores.js";
+import * as albumCtrl from "./controllers/album.controller.js";
+import * as laminaCtrl from "./controllers/lamina.controller.js";
 
 const app = new Hono();
 
@@ -8,7 +15,42 @@ const app = new Hono();
 app.use("/public/*", serveStatic({ root: "./" }));
 app.use("/uploads/*", serveStatic({ root: "./" }));
 
-// La web MVC arranca en /albumes (Fase 3); el resto de rutas llegan ahí.
+// ----- API REST: álbumes (BRIEF §8.1) -----
+app.get("/api/albumes", albumCtrl.listar);
+app.post("/api/albumes", albumCtrl.crear);
+app.get("/api/albumes/:id", albumCtrl.detalle);
+app.put("/api/albumes/:id", albumCtrl.actualizar);
+app.delete("/api/albumes/:id", albumCtrl.eliminar);
+
+// ----- API REST: láminas (BRIEF §8.1) -----
+app.get("/api/albumes/:id/laminas", laminaCtrl.listarDeAlbum);
+app.post("/api/albumes/:id/laminas", laminaCtrl.agregar);
+app.get("/api/laminas/:id", laminaCtrl.detalle);
+app.put("/api/laminas/:id", laminaCtrl.actualizar);
+app.patch("/api/laminas/:id", laminaCtrl.actualizarParcial);
+app.delete("/api/laminas/:id", laminaCtrl.eliminar);
+
+// La web MVC arranca en /albumes (Fase 3); mientras tanto, la raíz redirige ahí.
 app.get("/", (c) => c.redirect("/albumes"));
+
+// Errores JSON uniformes (BRIEF §8.2): 409 de negocio, 400 de Hono y 500.
+app.onError((err, c) => {
+  if (err instanceof ErrorNegocio) {
+    return errorJson(c, err.status, err.message, err.detalles);
+  }
+  if (err instanceof HTTPException) {
+    return errorJson(c, err.status, err.message);
+  }
+  console.error("Error no controlado:", err);
+  return errorJson(c, 500, "Error interno del servidor");
+});
+
+// Recurso /api/* inexistente -> 404 JSON uniforme.
+app.notFound((c) => {
+  if (c.req.path.startsWith("/api/")) {
+    return errorJson(c, 404, "Recurso no encontrado");
+  }
+  return c.text("404 No encontrado", 404);
+});
 
 export default app;

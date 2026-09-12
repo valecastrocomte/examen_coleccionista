@@ -66,7 +66,7 @@ Resumen — detalle completo, versiones y justificación en [stack.md](./stack.m
 | Framework web | Hono 4.13.x (server HTTP nativo de Node) |
 | ORM | Prisma 7.x + connector MySQL |
 | Base de datos | MySQL 8.x |
-| Validación | Zod + `@hono/zod-validator` |
+| Validación | **Zod** | Valida body/query/params antes de tocar la BD → 400 con detalle por campo (los controllers usan `safeParse`; ver stack.md §8) |
 | Vistas (MVC) | EJS (plantillas HTML server-side) |
 | UI / CSS | Bootstrap 5.3.x (assets locales en `public/vendor/bootstrap/`) |
 | Tests | Vitest + helper de testing de Hono |
@@ -85,7 +85,7 @@ Mapa directo entre el enunciado del curso y los requerimientos del nuevo stack:
 |---|---|---|
 | RF-1.1 | Inicializar un proyecto Spring Boot (configuración de proyecto) | Proyecto TypeScript inicializado con Hono; dependencias declaradas en `package.json` (equivalente al `pom.xml`) |
 | RF-1.2 | Configurar la conexión a una base de datos MySQL | `DATABASE_URL` en `.env` con credenciales MySQL y Prisma Client conectado al arranque |
-| RF-1.3 | Dependencias para JPA y MySQL | Sustituido por **Prisma** (`@prisma/client`, `prisma`, connector `mysql`) + `hono`, `@hono/node-server`, `zod`, `@hono/zod-validator`, `ejs`, `bootstrap` (lista completa en `stack.md` §3) |
+| RF-1.3 | Dependencias para JPA y MySQL | Sustituido por **Prisma** (`@prisma/client`, `prisma`, connector `mysql`) + `hono`, `@hono/node-server`, `zod`, `ejs`, `bootstrap` (lista completa en `stack.md` §3) |
 
 **Criterio de aceptación:** `npm install` + `npx prisma migrate dev` crean las tablas en MySQL y `npm run dev` levanta la API respondiendo en `http://localhost:3000`.
 

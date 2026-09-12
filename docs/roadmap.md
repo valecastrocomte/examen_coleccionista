@@ -2,7 +2,7 @@
 
 Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (Hono + Prisma + TypeScript + MySQL, arquitectura MVC, vistas Bootstrap oscuras).
 
-- **Estado general:** 🟢 En desarrollo — Fases 0 y 1 completadas (servidor + modelo de datos Prisma); sigue Fase 2.
+- **Estado general:** 🟢 En desarrollo — Fases 0–2 completadas (servidor, modelo de datos y API REST CRUD); sigue Fase 3.
 - **Fuente de requisitos:** [`docs/BRIEF.md`](docs/BRIEF.md) — ante cualquier duda, manda el BRIEF.
 
 ---
@@ -13,7 +13,7 @@ Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (H
 |---|---|---|
 | 0 | Setup del proyecto y MySQL | ✅ Completada |
 | 1 | Modelo de datos (Prisma) | ✅ Completada |
-| 2 | API REST CRUD (álbumes y láminas) | ⬜ Pendiente |
+| 2 | API REST CRUD (álbumes y láminas) | ✅ Completada |
 | 3 | Interfaces web MVC + Bootstrap | ⬜ Pendiente |
 | 4 | Reglas de negocio (bulk, faltantes, repetidas) | ⬜ Pendiente |
 | 5 | Fotos de láminas | ⬜ Pendiente |
@@ -28,7 +28,7 @@ Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (H
 **Objetivo:** servidor Hono en Node con TypeScript y conexión a MySQL vía Prisma.
 
 - [x] Inicializar proyecto Node + TypeScript (tsconfig estricto, `tsx` para dev).
-- [x] Instalar dependencias: `hono`, `@hono/node-server`, `prisma`, `@prisma/client`, `zod`, `@hono/zod-validator`, `ejs`, `bootstrap`, `vitest`.
+- [x] Instalar dependencias: `hono`, `@hono/node-server`, `prisma`, `@prisma/client`, `zod`, `ejs`, `bootstrap`, `vitest` (`@hono/zod-validator` se descartó en Fase 2; ver `stack.md` §8).
 - [x] `npx prisma init --datasource-provider mysql` y configurar `DATABASE_URL` en `.env`.
 - [x] Copiar Bootstrap `dist/` a `public/vendor/bootstrap/` (script `npm run bootstrap`).
 - [x] Servir `/public/*` y `/uploads/*` con `serveStatic` de `@hono/node-server/serve-static`.
@@ -62,16 +62,18 @@ Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (H
 
 **Objetivo:** endpoints JSON del BRIEF §8.1 con validación Zod.
 
-- [ ] `models/`: `album.model.ts` y `lamina.model.ts` (queries Prisma + esquemas Zod).
-- [ ] `controllers/`: `album.controller.ts` y `lamina.controller.ts`.
-- [ ] `src/app.ts`: rutas `/api/albumes*` y `/api/laminas*` (misma lógica que la web).
-- [ ] CRUD álbumes: `GET/POST /api/albumes`, `GET/PUT/DELETE /api/albumes/:id`.
-- [ ] CRUD láminas: `GET/POST /api/albumes/:id/laminas`, `GET/PUT/DELETE /api/laminas/:id`.
-- [ ] Errores JSON uniformes: `{ "error", "detalles" }` (400/404/409/500).
-- [ ] PATCH parcial de `cantidad` (sin permitir negativo).
+- [x] `models/`: `album.model.ts` y `lamina.model.ts` (queries Prisma + esquemas Zod) + `parametros.ts`/`lib/validacion.ts`.
+- [x] `controllers/`: `album.controller.ts` y `lamina.controller.ts`.
+- [x] `src/app.ts`: rutas `/api/albumes*` y `/api/laminas*` (misma lógica que la web).
+- [x] CRUD álbumes: `GET/POST /api/albumes`, `GET/PUT/DELETE /api/albumes/:id`.
+- [x] CRUD láminas: `GET/POST /api/albumes/:id/laminas`, `GET/PUT/DELETE /api/laminas/:id`.
+- [x] Errores JSON uniformes: `{ "error", "detalles" }` (400/404/409/500).
+- [x] PATCH parcial de `cantidad` (sin permitir negativo).
 
 **Cierre:** todos los endpoints responden según §8.2 con Thunder Client/Postman.
 **Actualiza:** `README.md` · `roadmap.md`.
+
+> **Cierre verificado (2026-09-12):** los 13 endpoints CRUD de álbumes y láminas responden los códigos de §8.2 (201/204/400 con detalle por campo/404/409) contra MySQL real: `npm test` = 19 tests (16 de API en `tests/api.test.ts` + 3 smoke) y `npm run build` pasan; recorrido manual con curl sobre `npm run dev`. Validación Zod en los controllers (`src/lib/validacion.ts`) con errores uniformes `{ "error", "detalles" }`; el middleware `@hono/zod-validator` se descartó por tipos incompatibles con handlers nombrados en Hono 4.13 (decisión en `docs/stack.md` §8).
 
 ---
 

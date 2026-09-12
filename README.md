@@ -103,7 +103,7 @@ Abrir en el navegador:
 | [`docs/API.md`](docs/API.md) | Guía de consumo de la API: endpoints, Request/Response |
 | [`docs/INFORME_PRUEBAS.md`](docs/INFORME_PRUEBAS.md) | Informe de pruebas con screenshots |
 | [`docs/style.md`](docs/style.md) | Guía de estilos de la interfaz (tema oscuro profesional) |
-| [`roadmap.md`](roadmap.md) | Fases de implementación y avance |
+| [`docs/roadmap.md`](docs/roadmap.md) | Fases de implementación y avance |
 | [`AGENT.md`](AGENT.md) | Reglas para agentes de IA y colaboradores |
 
 ---
@@ -121,18 +121,20 @@ Abrir en el navegador:
 │   ├── index.ts                 # Arranque del servidor
 │   ├── app.ts                   # App Hono: middleware, estáticos, rutas
 │   ├── db.ts                    # Instancia única de PrismaClient (MySQL)
+│   ├── models/                  # Esquemas Zod + queries Prisma (album, lamina, parametros)
+│   ├── controllers/             # Resuelven peticiones JSON (/api/*) y HTML (Fase 3)
+│   ├── lib/                     # errores.ts (JSON uniforme) · validacion.ts (Zod safeParse)
 │   ├── generated/prisma/        # Cliente Prisma generado (no editar)
 │   ├── public/vendor/bootstrap/ # Assets de Bootstrap (`npm run bootstrap`)
 │   └── uploads/                 # Fotos subidas (en gitignore)
 ├── scripts/
 │   └── copiar-bootstrap.mjs     # Copia Bootstrap de node_modules/ a public/
 ├── tests/
-│   └── smoke.test.ts            # Test de humo (Fase 0): redirect y estáticos
+│   ├── smoke.test.ts            # Test de humo (Fase 0): redirect y estáticos
+│   └── api.test.ts              # Tests CRUD de la API (Fase 2) contra MySQL
 ├── docker-compose.yml           # MySQL 8.4 para desarrollo
 ├── .env.example                 # Plantilla de configuración local
 ├── README.md                    # Este archivo
-├── roadmap.md
 └── AGENT.md
 
-Pendiente de fases siguientes: `src/models/`, `src/controllers/`, `src/views/` y
-`src/lib/upload.ts`.
+Pendiente de fases siguientes: `src/views/` (Fase 3) y `src/lib/upload.ts` (Fase 5).
