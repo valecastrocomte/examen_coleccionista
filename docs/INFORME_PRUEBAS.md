@@ -326,3 +326,84 @@
 ## 6. Conclusión
 
 > Todas las pruebas manuales (31 en total) pasaron: **resultado obtenido = resultado esperado** en el 100 % de los casos. La API cumple el contrato documentado en `docs/API.md` (códigos 2xx/400/404/409 y formato de error uniforme), la lógica de negocio respeta el BRIEF §7 (estado derivado 0/1/≥2, bulk todo-o-nada, `cantidadRepetidas = cantidad − 1`) y las vistas web MVC funcionan con el tema oscuro de `docs/style.md`, incluyendo el patrón PRG con mensajes `?ok=`. Los tests automatizados Vitest (`npm test` = 38) complementan sin sustituir esta evidencia manual.
+
+---
+## 7. Sesión con Chrome DevTools (navegador Chromium real) — flujos desde `/`
+
+> **Fecha:** 2026-09-12 · **Cliente:** Chromium headless vía Chrome DevTools (accesibilidad + red + consola de recursos), flujo completo de la web MVC **comenzando en la raíz**.
+> **Evidencia:** snapshot del árbol de accesibilidad, entradas de red (`performance.getEntriesByType('resource')`) y respuestas HTTP reales por cada paso. Las capturas de pantalla de la sesión se guardaron fuera del repositorio (directorio temporal del harness, formato webp) y no se incorporaron al informe.
+
+### PR-34 — Raíz redirige a la web MVC
+- **Método/Ruta:** `GET /` (primer paso de la sesión)
+- **Esperado:** `302 → /albumes`.
+- **Obtenido:** ✔ `302 Location: http://localhost:3000/albumes` (verificado en el navegador y con `curl -I`). El listado carga: título “Álbumes · Coleccionista de Láminas”, 1 álbum del seed con “6 láminas · 2 faltantes · 2 repetidas”.
+- **Red:** bootstrap.min.css/app.css/bundle.js → `200`; única falla: `https://ejemplo.com/portada-mundial-2026.png` (URL ficticia del seed, no de la app).
+
+### PR-35 — Alta de álbum por formulario (PRG)
+- **Método/Ruta:** `GET /albumes/nuevo` → `POST /albumes`
+- **Obtenido:** ✔ `303 → /albumes/12?ok=Álbum creado correctamente`; alerta visible; detalle con “0 láminas en total” y sección de carga masiva.
+
+### PR-36 — Alta individual de láminas (estados 0/1/≥2)
+- **Método/Ruta:** `GET /albumes/12/laminas/nueva` → `POST /albumes/12/laminas` ×3
+- **Obtenido:** ✔ Lámina 1 RARA `cantidad 0` → badge “Faltante”; Lámina 2 EPICA `1` → “Única”; Lámina 3 COMUN `3` → “Repetida ×2” (`cantidadRepetidas = cantidad − 1`). Cada alta redirige con `?ok=Lámina "…" agregada`.
+
+### PR-37 — Carga masiva OK desde el textarea
+- **Método/Ruta:** `POST /albumes/12/laminas/bulk` (formulario del detalle)
+- **Obtenido:** ✔ `303 → ?ok=3 láminas cargadas correctamente`; la tabla pasa de 3 a 6 filas; “Repetida ×1” para `cantidad 2`; “Faltante” y “Única” correctos.
+
+### PR-38 — Carga masiva con duplicado → todo-o-nada
+- **Método/Ruta:** `POST /albumes/12/laminas/bulk` con lote `[ {numero:4(existente)}, {numero:7} ]`
+- **Obtenido:** ✔ alerta “Ya existe una lámina con ese número en este álbum; no se cargó ninguna”; la tabla sigue con 6 filas; la lámina 7 **no** existe (rollback).
+
+### PR-39 — Vistas faltantes / repetidas
+- **Método/Ruta:** `GET /albumes/12/laminas/faltantes` y `/albumes/12/laminas/repetidas`
+- **Obtenido:** ✔ faltantes = Lámina 1 y Lámina 6 (las dos con `cantidad 0`); repetidas = Lámina 3 (×2) y Lámina 4 (×1).
+
+### PR-40 — Edición de álbum: **BUG encontrado y corregido durante la prueba**
+- **Ruta:** `GET /albumes/12/editar`
+- **Esperado:** formulario precargado con los datos del álbum.
+- **Obtenido (bug):** el campo `fechaLanzamiento` se renderizaba con el valor **inválido** `Fri Sep 11 2026 21:00:00 GMT-0300 (hora de verano de Chile)` — el `Date` de Prisma serializado por EJS a `toString()`. Un `<input type="date">` con ese valor queda vacío en el navegador, y al enviar el formulario la validación Zod rechaza `fechaLanzamiento=""` (“es obligatorio” en `invalid-feedback`). **Consecuencia: editar un álbum sin reescribir la fecha era imposible.**
+- **Causa raíz:** `vistaFormEditar` (src/controllers/album.controller.ts) pasaba `datos: album` (objeto Prisma crudo) mientras que detalle/listado serializan con `serializarAlbum()` (src/models/album.model.ts aplica `aFormatoFecha`).
+- **Corrección:** `datos: serializarAlbum(album)` en `vistaFormEditar` — misma convención que el resto de vistas.
+- **Verificación post-fix:** ✔ el formulario precarga `2026-09-12`; editar (nombre + descripción) → `303 → /albumes/12?ok=Álbum actualizado correctamente`; `<h1>` muestra “Álbum Web DevTools (editado)”.
+
+### PR-41 — Edición de lámina
+- **Ruta:** `GET /laminas/42/editar` → `POST` (cantidad 3 → 5)
+- **Obtenido:** ✔ precarga correcta (número 3, COMUN, cantidad 3); `303 → ?ok=Lámina actualizada correctamente`; cantidad 5 persistida (la API `/api/laminas/42` devuelve `cantidad: 5`).
+
+### PR-42 — Subida de foto
+- **Ruta:** `POST /laminas/42/foto` (multipart, `registro` de prueba PNG de 68 bytes)
+- **Obtenido:** ✔ `303 → /laminas/42/editar?ok=Foto subida correctamente`; archivo en `uploads/laminas/42_*.png`; `GET /uploads/laminas/42_*.png` → `200 image/png`; `<img>` visible en el formulario y en la tabla (celda “Foto”).
+
+### PR-43 — Eliminaciones con `confirm()` + cascada
+- **Ruta:** `POST /laminas/42/eliminar` y `POST /albumes/12/eliminar`
+- **Obtenido:** ✔ el `onsubmit="return confirm(...)"` de los tres formularios (detalle lámina, detalle álbum, listado) está presente en las plantillas; con el diálogo aceptado: lámina eliminada (`?ok=Lámina "Lámina 3 Prueba" eliminada`, 6→5 filas) y álbum eliminado con **cascada** (`?ok=Álbum "…" eliminado`); el listado vuelve al seed (solo “Copa Mundial 2026”) y `/api/albumes` devuelve solo el álbum 1. `/api/laminas/42` → `404 {"error":"Lámina no encontrada"}`.
+
+### PR-44 — 404 web
+- **Ruta:** `GET /albumes/999` y `GET /albumes/999/laminas/faltantes`
+- **Obtenido:** ✔ `404 Página no encontrada`.
+
+**Observación (no corregida, fuera del contrato probado):** `src/lib/upload.ts` solo escribe archivos; eliminar una lámina/álbum no borra su foto de `uploads/laminas/` (queda un huérfano en disco). No afecta la API ni la web, pero es fuga de almacenamiento con el tiempo.
+
+**Resultado de la sesión:** 11 flujos verificados en navegador real desde `/`; **1 bug corregido** (PR-40) y 1 observación registrada. Tras la sesión la BD quedó en el estado del seed.
+
+### 7.1 Sesión coleccionista (recorrido de uso real, 2026-09-12)
+
+> Ejecutada con Chromium real **roleando como el usuario final**: el coleccionista revisa su vitrina, decide qué cazar/canjear, registra adquisiciones, sube la foto de la lámina física y arma una colección nueva. Al cierre la BD se restaura al seed (convención del proyecto).
+
+| Paso | Acción del coleccionista | Resultado |
+|---|---|---|
+| CP-01 | Entra a `/` → cae al listado; lee la tarjeta: “6 láminas · 2 faltantes · 2 repetidas” | ✔ |
+| CP-02 | Abre “Copa Mundial 2026”: filas con badges Faltante (Messi, Álvarez) / Única / Repetida ×N | ✔ |
+| CP-03 | “Ver faltantes” → le faltan Messi (n.º 1) y Álvarez (n.º 5); “Ver repetidas” → tiene Maradona ×2 y Martínez ×1 de cambio | ✔ |
+| CP-04 | **Canjea** una Maradona repetida: edita `cantidad 3 → 2` → `?ok=Lámina actualizada correctamente`; badge pasa a “Repetida ×1” | ✔ |
+| CP-05 | **Registra adquisiciones** (consiguió Messi y Álvarez): `cantidad 0 → 1` en ambas → la vitrina global pasa a **0 faltantes** | ✔ |
+| CP-06 | **Sube la foto** de la Messi física (PNG de 68 bytes) → `?ok=Foto subida correctamente`; `<img>` aparece en la celda “Foto” y en el formulario; `GET /uploads/laminas/1_*.png` → `200 image/png` | ✔ |
+| CP-07 | **Arma colección nueva** “Fórmula 1 2025”: alta por formulario (PRG ✔) + carga masiva de 4 láminas (Verstappen/Hamilton únicas, Leclerc faltante, Alonso ×2) → `?ok=4 láminas cargadas correctamente` | ✔ |
+| CP-08 | **Se equivoca**: intenta registrar otra Verstappen en el mismo lote que una Norris → “Ya existe una lámina con ese número… no se cargó ninguna”; la Norris tampoco se insertó (rollback todo-o-nada) | ✔ |
+| CP-09 | Registra a Norris aparte (individual) → 5 láminas; estadísticas: `total 5 · faltantes 1 · repetidas 1 · completado 80 %`; “Ver faltantes” = Leclerc, “Ver repetidas” = Alonso ×1 | ✔ |
+| CP-10 | Cierre: borra el álbum F1 (cascada, `204`) y revierte Messi/Álvarez/Maradona a los valores del seed → vitrina de nuevo en estado inicial (2 faltantes, 2 repetidas, `uploads/` vacío) | ✔ |
+
+**Semántica del total “repetidas” (pregunta abierta en la sesión, resuelta contra el BRIEF):** el agregado del álbum (`/api/albumes` y `/estadisticas`) y el `totalRepetidas` de `/laminas/repetidas` cuentan **láminas con `cantidad ≥ 2`** (BRIEF §7), mientras que el excedente va **por lámina**: `cantidadRepetidas = cantidad − 1` (RF-3.3, ejemplo de `docs/API.md`: Maradona `cantidad 3` → `totalRepetidas 1`, `cantidadRepetidas 2`). La implementación coincide con el contrato; no se requiere cambio. Verificado en vivo: `/api/albumes/1/laminas/repetidas` → `totalRepetidas: 2` (Maradona `×2`, Martínez `×1`).
+
+**Resultado:** 10 pasos del recorrido coleccionista, todos con resultado esperado = obtenido, cerrando la BD en el estado del seed.

@@ -137,7 +137,7 @@ export const vistaFormEditar: Handler = async (c) => {
     titulo: "Editar álbum",
     modo: "editar",
     albumId: album.id,
-    datos: album,
+    datos: serializarAlbum(album),
   });
 };
 
