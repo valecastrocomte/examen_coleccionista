@@ -18,6 +18,7 @@ import {
   validarLoteLaminas,
 } from "../models/lamina.model.js";
 import { ErrorNegocio, errorJson } from "../lib/errores.js";
+import type { LaminaModel } from "../generated/prisma/models/Lamina.js";
 import { validarCuerpo, validarFormulario, validarParamId } from "../lib/validacion.js";
 import { renderVista } from "../lib/vistas.js";
 
@@ -78,6 +79,63 @@ export const eliminar: Handler = async (c) => {
   const borrado = await eliminarLamina(parametro.id);
   if (!borrado) return errorJson(c, 404, LAMINA_NO_ENCONTRADA);
   return new Response(null, { status: 204 });
+};
+
+/** Carga masiva transaccional (BRIEF §8.1, RF-3.2): todo o nada. 201 con las
+ * creadas, 400 si alguna entrada falla (errores por índice), 404 si el álbum no
+ * existe y 409 si un número se repite (rollback total; el ErrorNegocio lo
+ * responde el onError de src/app.ts). */
+export const crearBulk: Handler = async (c) => {
+  const parametro = validarParamId(c);
+  if (!parametro.ok) return parametro.respuesta;
+  const albumId = parametro.id;
+  if (!(await existeAlbum(albumId))) return errorJson(c, 404, ALBUM_NO_ENCONTRADO);
+
+  let crudo: unknown;
+  try {
+    crudo = await c.req.json();
+  } catch {
+    return errorJson(c, 400, "Cuerpo de la petición inválido: debe ser un array JSON de láminas");
+  }
+
+  const lote = validarLoteLaminas(crudo);
+  if (!lote.ok) {
+    // Errores por índice con el formato uniforme: el índice del lote va en `campo`
+    // (p. ej. lote[1].tipo); "(lote)" marca errores de todo el array.
+    return errorJson(c, 400, "Datos inválidos", lote.errores.map((e) => ({
+      campo: e.campo === "(lote)" || e.campo === "(lámina)" ? "lote" : `lote[${e.indice}].${e.campo}`,
+      mensaje: e.mensaje,
+    })));
+  }
+
+  // Tras un lote válido, crearLaminasBulk solo devuelve láminas creadas: el fallo
+  // por duplicado se lanza como ErrorNegocio 409 dentro de la transacción.
+  const creadas = (await crearLaminasBulk(albumId, lote.laminas)) as LaminaModel[];
+  return c.json({ creadas: creadas.length, laminas: creadas }, 201);
+};
+
+/** Faltantes del álbum (cantidad = 0) (BRIEF §8.1, RF-3.3). */
+export const listarFaltantes: Handler = async (c) => {
+  const parametro = validarParamId(c);
+  if (!parametro.ok) return parametro.respuesta;
+  const album = await obtenerAlbum(parametro.id);
+  if (!album) return errorJson(c, 404, ALBUM_NO_ENCONTRADO);
+  const faltantes = album.laminas.filter((l) => l.cantidad === 0);
+  return c.json({ albumId: album.id, totalFaltantes: faltantes.length, faltantes });
+};
+
+/** Repetidas del álbum (cantidad ≥ 2) con cantidadRepetidas = cantidad − 1 (BRIEF §7.2). */
+export const listarRepetidas: Handler = async (c) => {
+  const parametro = validarParamId(c);
+  if (!parametro.ok) return parametro.respuesta;
+  const album = await obtenerAlbum(parametro.id);
+  if (!album) return errorJson(c, 404, ALBUM_NO_ENCONTRADO);
+  const repetidas = album.laminas.filter((l) => l.cantidad >= 2);
+  return c.json({
+    albumId: album.id,
+    totalRepetidas: repetidas.length,
+    repetidas: repetidas.map((l) => ({ ...l, cantidadRepetidas: l.cantidad - 1 })),
+  });
 };
 
 // ============================== Web MVC (HTML) ==============================

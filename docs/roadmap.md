@@ -2,7 +2,7 @@
 
 Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (Hono + Prisma + TypeScript + MySQL, arquitectura MVC, vistas Bootstrap oscuras).
 
-- **Estado general:** 🟢 En desarrollo — Fases 0–3 completadas (servidor, modelo de datos, API REST y vistas web MVC); sigue Fase 4.
+- **Estado general:** 🟢 En desarrollo — Fases 0–4 completadas (servidor, modelo de datos, API REST, vistas web MVC y reglas de negocio); sigue Fase 5.
 - **Fuente de requisitos:** [`docs/BRIEF.md`](docs/BRIEF.md) — ante cualquier duda, manda el BRIEF.
 
 ---
@@ -15,7 +15,7 @@ Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (H
 | 1 | Modelo de datos (Prisma) | ✅ Completada |
 | 2 | API REST CRUD (álbumes y láminas) | ✅ Completada |
 | 3 | Interfaces web MVC + Bootstrap | ✅ Completada |
-| 4 | Reglas de negocio (bulk, faltantes, repetidas) | ⬜ Pendiente |
+| 4 | Reglas de negocio (bulk, faltantes, repetidas) | ✅ Completada |
 | 5 | Fotos de láminas | ⬜ Pendiente |
 | 6 | Documentación de consumo (API.md) | ⬜ Pendiente |
 | 7 | Pruebas + informe con screenshots | ⬜ Pendiente |
@@ -99,15 +99,17 @@ Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (H
 
 **Objetivo:** cumplir el BRIEF §7/§3 (estados, bulk, faltantes, repetidas).
 
-- [ ] Estado derivado de `cantidad` (0/1/≥2) en models y vistas.
-- [ ] `POST /api/albumes/:id/laminas/bulk` transaccional (todo o nada), 409 en duplicado.
-- [ ] `GET /api/albumes/:id/laminas/faltantes` y `.../repetidas` con `cantidadRepetidas = cantidad − 1`.
-- [ ] Carga masiva desde la vista web (textarea JSON).
-- [ ] Tests Vitest: bulk transaccional, conteo de repetidas, filtros faltantes/repetidas.
-- [ ] `npm test` verde.
+- [x] Estado derivado de `cantidad` (0/1/≥2) en models y vistas.
+- [x] `POST /api/albumes/:id/laminas/bulk` transaccional (todo o nada), 409 en duplicado.
+- [x] `GET /api/albumes/:id/laminas/faltantes` y `.../repetidas` con `cantidadRepetidas = cantidad − 1`.
+- [x] Carga masiva desde la vista web (textarea JSON).
+- [x] Tests Vitest: bulk transaccional, conteo de repetidas, filtros faltantes/repetidas.
+- [x] `npm test` verde.
 
 **Cierre:** tests verdes y comportamiento verificado manualmente en API y web.
 **Actualiza:** `README.md` · `roadmap.md`.
+
+> **Cierre verificado (2026-09-12):** endpoints `/api/albumes/:id/laminas/bulk`, `/faltantes` y `/repetidas` respondiendo contra MySQL real con los códigos del BRIEF §8.1 — 201 con `creadas`/`laminas`, 400 con errores por índice (`lote[i].campo`), 404 y 409 (duplicado → rollback total; ningún insert a medias) — y `cantidadRepetidas = cantidad − 1` en cada repetida. `npm test` = 28 tests (9 nuevos de Fase 4 + 19 previos) y `npm run build` pasan. Carga masiva web re-verificada sobre el servidor en vivo: el POST del textarea JSON redirige con `?ok=3 láminas cargadas correctamente` (303) y un lote con número duplicado avisa "no se cargó ninguna" sin insertar. La lógica (estado derivado, transacción, validación por lote) vivía en los models desde Fase 3; esta fase expuso los endpoints públicos y los tests del Bloque 3 (BRIEF §10.3).
 
 ---
 

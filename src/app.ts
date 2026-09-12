@@ -25,6 +25,9 @@ app.delete("/api/albumes/:id", albumCtrl.eliminar);
 // ----- API REST: láminas (BRIEF §8.1) -----
 app.get("/api/albumes/:id/laminas", laminaCtrl.listarDeAlbum);
 app.post("/api/albumes/:id/laminas", laminaCtrl.agregar);
+app.post("/api/albumes/:id/laminas/bulk", laminaCtrl.crearBulk);
+app.get("/api/albumes/:id/laminas/faltantes", laminaCtrl.listarFaltantes);
+app.get("/api/albumes/:id/laminas/repetidas", laminaCtrl.listarRepetidas);
 app.get("/api/laminas/:id", laminaCtrl.detalle);
 app.put("/api/laminas/:id", laminaCtrl.actualizar);
 app.patch("/api/laminas/:id", laminaCtrl.actualizarParcial);

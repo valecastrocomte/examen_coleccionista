@@ -134,7 +134,8 @@ Abrir en el navegador:
 │   └── copiar-bootstrap.mjs     # Copia Bootstrap de node_modules/ a public/
 ├── tests/
 │   ├── smoke.test.ts            # Test de humo (Fase 0): redirect y estáticos
-│   └── api.test.ts              # Tests CRUD de la API (Fase 2) contra MySQL
+│   ├── api.test.ts              # Tests CRUD de la API (Fase 2) contra MySQL
+│   └── fase4.test.ts            # Tests de reglas de negocio (Fase 4): bulk, faltantes/repetidas
 ├── docker-compose.yml           # MySQL 8.4 para desarrollo
 ├── .env.example                 # Plantilla de configuración local
 ├── README.md                    # Este archivo
