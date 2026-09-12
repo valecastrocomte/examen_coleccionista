@@ -142,4 +142,4 @@ Abrir en el navegador:
 ├── README.md                    # Este archivo
 └── AGENT.md
 
-Pendiente de fases siguientes: Fase 8 — refinamiento final y entrega (`docs/roadmap.md`).
+Estado: Fases 0–8 completadas — entregables del BRIEF §11/§12 verificados (`docs/roadmap.md`).

@@ -2,7 +2,7 @@
 
 Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (Hono + Prisma + TypeScript + MySQL, arquitectura MVC, vistas Bootstrap oscuras).
 
-- **Estado general:** 🟢 En desarrollo — Fases 0–7 completadas (servidor, modelo de datos, API REST, vistas web MVC, reglas de negocio, fotos de láminas, documentación de consumo y pruebas con informe); sigue Fase 8.
+- **Estado general:** 🟢 Completada — Fases 0–8 entregadas (servidor, modelo de datos, API REST, vistas web MVC, reglas de negocio, fotos de láminas, documentación de consumo, pruebas con informe y refinamiento final).
 - **Fuente de requisitos:** [`docs/BRIEF.md`](docs/BRIEF.md) — ante cualquier duda, manda el BRIEF.
 
 ---
@@ -19,7 +19,7 @@ Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (H
 | 5 | Fotos de láminas | ✅ Completada |
 | 6 | Documentación de consumo (API.md) | ✅ Completada |
 | 7 | Pruebas + informe con screenshots | ✅ Completada |
-| 8 | Refinamiento final y entrega | ⬜ Pendiente |
+| 8 | Refinamiento final y entrega | ✅ Completada |
 
 ---
 
@@ -162,12 +162,14 @@ Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (H
 
 **Objetivo:** checklist de aceptación del BRIEF §11 en verde.
 
-- [ ] Verificar los criterios del BRIEF §11 uno a uno.
-- [ ] Revisar `style.md` §8 en todas las vistas.
-- [ ] Confirmar `README.md` con comandos vigentes y enlaces a `docs/`.
-- [ ] Commit final y push del repositorio.
+- [x] Verificar los criterios del BRIEF §11 uno a uno.
+- [x] Revisar `style.md` §8 en todas las vistas.
+- [x] Confirmar `README.md` con comandos vigentes y enlaces a `docs/`.
+- [x] Commit final y push del repositorio.
 
 **Cierre:** todos los entregables del BRIEF §12 completos.
+
+> **Cierre verificado (2026-09-12):** los 10 criterios del BRIEF §11 se verificaron uno a uno contra el servidor en vivo: MySQL 8.4 healthy con seed (Bl. 1), `package.json` + `schema.prisma` con datasource `mysql` y entidades `Album`/`Lamina` del BRIEF §6 (Bl. 2), CRUD y foto por lámina cubiertos por `tests/api.test.ts`/`tests/fase5.test.ts` y el informe, bulk transaccional y faltantes/repetidas verificados en vivo (`cantidadRepetidas = cantidad − 1`: 3→2, 2→1; estadísticas 66.7) (Bl. 3), `docs/API.md` (17 endpoints + errores uniformes) e `docs/INFORME_PRUEBAS.md` (31 pruebas manuales con screenshot cada una) entregados (Bl. 4). `npm test` = 38/38 y `npm run build` pasan. Revision visual: checklist `style.md` §8 verde en las 10 vistas (partials `header`/`nav`/`footer`, badges por estado, `table-responsive`, borrados POST con confirmación, errores bajo el campo, nav activo); se corrigió una clase inexistente (`.text-muted-custom` → `text-muted` de Bootstrap) en `albumes/listar.ejs` y se eliminaron los directorios vacíos residuales `src/public/` y `src/uploads/` del scaffold. Repositorio entregado: commit final `push` a `origin/main`. Todos los entregables del BRIEF §12 completos.
 
 ---
 

@@ -30,7 +30,7 @@
       <div class="card-body">
         <h2 class="h6 mb-1"><%= album.nombre %></h2>
         <p class="text-muted small mb-1"><%= album.tipoLaminas %> · <%= album.fechaLanzamiento %></p>
-        <div class="small text-muted-custom">
+        <div class="small text-muted">
           <span><%= album.totalLaminas %> láminas</span>
           <span class="badge text-bg-danger ms-1"><%= album.faltantes %> faltantes</span>
           <span class="badge text-bg-warning ms-1"><%= album.repetidas %> repetidas</span>
@@ -64,7 +64,7 @@
       <tr>
         <td>
           <a href="/albumes/<%= album.id %>"><%= album.nombre %></a>
-          <% if (album.descripcion) { %><div class="small text-muted-custom"><%= album.descripcion %></div><% } %>
+          <% if (album.descripcion) { %><div class="small text-muted"><%= album.descripcion %></div><% } %>
         </td>
         <td><%= album.tipoLaminas %></td>
         <td><%= album.fechaLanzamiento %></td>
