@@ -2,7 +2,7 @@
 
 Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (Hono + Prisma + TypeScript + MySQL, arquitectura MVC, vistas Bootstrap oscuras).
 
-- **Estado general:** 🟢 En desarrollo — Fases 0–4 completadas (servidor, modelo de datos, API REST, vistas web MVC y reglas de negocio); sigue Fase 5.
+- **Estado general:** 🟢 En desarrollo — Fases 0–5 completadas (servidor, modelo de datos, API REST, vistas web MVC, reglas de negocio y fotos de láminas); sigue Fase 6.
 - **Fuente de requisitos:** [`docs/BRIEF.md`](docs/BRIEF.md) — ante cualquier duda, manda el BRIEF.
 
 ---
@@ -16,7 +16,7 @@ Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (H
 | 2 | API REST CRUD (álbumes y láminas) | ✅ Completada |
 | 3 | Interfaces web MVC + Bootstrap | ✅ Completada |
 | 4 | Reglas de negocio (bulk, faltantes, repetidas) | ✅ Completada |
-| 5 | Fotos de láminas | ⬜ Pendiente |
+| 5 | Fotos de láminas | ✅ Completada |
 | 6 | Documentación de consumo (API.md) | ⬜ Pendiente |
 | 7 | Pruebas + informe con screenshots | ⬜ Pendiente |
 | 8 | Refinamiento final y entrega | ⬜ Pendiente |
@@ -117,12 +117,15 @@ Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (H
 
 **Objetivo:** subida opcional de foto por lámina (BRIEF RF-2.4, regla 8).
 
-- [ ] `lib/upload.ts`: validar extensión (jpg/jpeg/png/webp/gif) y ≤ 5 MB.
-- [ ] `POST /api/laminas/:id/foto` (multipart) y formulario web equivalente.
-- [ ] Guardado en `uploads/` con nombre saneado y URL en el campo `imagen`.
-- [ ] `uploads/` en `.gitignore`.
+- [x] `lib/upload.ts`: validar extensión (jpg/jpeg/png/webp/gif) y ≤ 5 MB.
+- [x] `POST /api/laminas/:id/foto` (multipart) y formulario web equivalente.
+- [x] Guardado en `uploads/` con nombre saneado y URL en el campo `imagen`.
+- [x] `uploads/` en `.gitignore`.
+- [x] `GET /api/albumes/:id/estadisticas` (BRIEF §8.1, fuera del checklist): total, faltantes, repetidas y % completado.
 
 **Cierre:** foto subida por API y web accesible vía `/uploads/...`.
+
+> **Cierre verificado (2026-09-12):** `POST /api/laminas/:id/foto` sube una imagen real por multipart y la sirve por `/uploads/laminas/<id>_<ts>.<ext>` (200 `image/png`); 400 para extensión no permitida, tamaño > 5 MB, campo `foto` ausente o body no multipart, y 404 si la lámina no existe. Web en `laminas/form.ejs` (modo editar) con PRG: éxito → `?ok=Foto subida correctamente`, error visible en el formulario; miniatura en `albumes/detalle.ejs`. `GET /api/albumes/:id/estadisticas` responde 200 con `{ albumId, totalLaminas, faltantes, repetidas, porcentajeCompletado }` (seed: 66.7 = (6−2)/6 con 1 decimal; álbum vacío = 100) y 404 si no existe. `npm test` = 38 tests (10 nuevos en `tests/fase5.test.ts`) y `npm run build` pasan.
 
 ---
 

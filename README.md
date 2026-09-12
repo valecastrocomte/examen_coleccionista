@@ -123,22 +123,23 @@ Abrir en el navegador:
 │   ├── db.ts                    # Instancia única de PrismaClient (MySQL)
 │   ├── models/                  # Esquemas Zod + queries Prisma (album, lamina, parametros)
 │   ├── controllers/             # API JSON (/api/*) y web MVC (mismos models)
-│   ├── lib/                     # errores.ts (JSON uniforme) · validacion.ts (Zod) · vistas.ts (EJS)
+│   ├── lib/                     # errores.ts (JSON uniforme) · validacion.ts (Zod) · vistas.ts (EJS) · upload.ts (fotos)
 │   ├── views/                   # Plantillas EJS: partials/, albumes/, laminas/
-│   ├── generated/prisma/        # Cliente Prisma generado (no editar)
-│   └── uploads/                 # Fotos subidas (en gitignore)
+│   └── generated/prisma/        # Cliente Prisma generado (no editar)
 ├── public/
 │   ├── css/app.css              # Tema oscuro (paleta de docs/style.md §2)
 │   └── vendor/bootstrap/        # Assets de Bootstrap (`npm run bootstrap`)
+├── uploads/                     # Fotos subidas de láminas (Fase 5; en gitignore)
 ├── scripts/
 │   └── copiar-bootstrap.mjs     # Copia Bootstrap de node_modules/ a public/
 ├── tests/
 │   ├── smoke.test.ts            # Test de humo (Fase 0): redirect y estáticos
 │   ├── api.test.ts              # Tests CRUD de la API (Fase 2) contra MySQL
-│   └── fase4.test.ts            # Tests de reglas de negocio (Fase 4): bulk, faltantes/repetidas
+│   ├── fase4.test.ts            # Tests de reglas de negocio (Fase 4): bulk, faltantes/repetidas
+│   └── fase5.test.ts            # Tests de Fase 5: foto de lámina y estadísticas
 ├── docker-compose.yml           # MySQL 8.4 para desarrollo
 ├── .env.example                 # Plantilla de configuración local
 ├── README.md                    # Este archivo
 └── AGENT.md
 
-Pendiente de fases siguientes: `src/lib/upload.ts` (Fase 5, fotos).
+Pendiente de fases siguientes: documentación de consumo (`docs/API.md`, Fase 6).

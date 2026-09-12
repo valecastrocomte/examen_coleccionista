@@ -122,3 +122,27 @@ export async function eliminarAlbum(id: number): Promise<boolean> {
   await db.album.delete({ where: { id } });
   return true;
 }
+
+export interface EstadisticasAlbum {
+  albumId: number;
+  totalLaminas: number;
+  faltantes: number;
+  repetidas: number;
+  /** 0–100 con 1 decimal; álbum vacío = 100 % (no tiene faltantes). */
+  porcentajeCompletado: number;
+}
+
+/** Totales derivados de las láminas del álbum (BRIEF §8.1 estadísticas).
+ * El porcentaje de completado = (total − faltantes) / total. */
+export async function estadisticasAlbum(id: number): Promise<EstadisticasAlbum | null> {
+  const album = await obtenerAlbum(id);
+  if (!album) return null;
+  const totalLaminas = album.laminas.length;
+  const faltantes = album.laminas.filter((l) => l.cantidad === 0).length;
+  const repetidas = album.laminas.filter((l) => l.cantidad >= 2).length;
+  const porcentajeCompletado =
+    totalLaminas === 0
+      ? 100
+      : Math.round(((totalLaminas - faltantes) / totalLaminas) * 1000) / 10;
+  return { albumId: album.id, totalLaminas, faltantes, repetidas, porcentajeCompletado };
+}

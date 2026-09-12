@@ -10,6 +10,7 @@ import {
   crearLamina,
   crearLaminasBulk,
   eliminarLamina,
+  guardarFotoLamina,
   laminaEntradaSchema,
   laminaPatchSchema,
   listarLaminasDeAlbum,
@@ -79,6 +80,27 @@ export const eliminar: Handler = async (c) => {
   const borrado = await eliminarLamina(parametro.id);
   if (!borrado) return errorJson(c, 404, LAMINA_NO_ENCONTRADA);
   return new Response(null, { status: 204 });
+};
+
+/** Sube la foto de la lámina (BRIEF §8.1, RF-2.4): body multipart/form-data con
+ * el campo `foto`. 200 con { id, imagen }, 400 si el archivo no es una imagen
+ * válida (extensión jpg/jpeg/png/webp/gif, ≤ 5 MB) y 404 si la lámina no
+ * existe. El 400 lo lanza guardarFotoLamina como ErrorNegocio. */
+export const subirFoto: Handler = async (c) => {
+  const parametro = validarParamId(c);
+  if (!parametro.ok) return parametro.respuesta;
+  if (!(c.req.header("content-type") ?? "").includes("multipart/form-data")) {
+    return errorJson(c, 400, "La petición debe ser multipart/form-data con el campo 'foto'");
+  }
+  let cuerpo: Record<string, unknown>;
+  try {
+    cuerpo = await c.req.parseBody();
+  } catch {
+    return errorJson(c, 400, "No se pudo leer el archivo enviado");
+  }
+  const lamina = await guardarFotoLamina(parametro.id, cuerpo["foto"]);
+  if (!lamina) return errorJson(c, 404, LAMINA_NO_ENCONTRADA);
+  return c.json({ id: lamina.id, imagen: lamina.imagen });
 };
 
 /** Carga masiva transaccional (BRIEF §8.1, RF-3.2): todo o nada. 201 con las
@@ -238,6 +260,7 @@ export const vistaFormEditar: Handler = async (c) => {
     albumId: lamina.albumId,
     albumNombre: album?.nombre ?? "Álbum",
     datos: lamina,
+    ok: c.req.query("ok"),
   });
 };
 
@@ -286,6 +309,34 @@ export const vistaEliminar: Handler = async (c) => {
   if (!lamina) return redirigirConMensaje(c, "/albumes", "La lámina ya no existía");
   await eliminarLamina(parametro.id);
   return redirigirConMensaje(c, `/albumes/${lamina.albumId}`, `Lámina "${lamina.nombre}" eliminada`);
+};
+
+/** Sube la foto desde el formulario web de la lámina (BRIEF §8.3): misma lógica
+ * multipart que la API. PRG: redirige con ?ok= al éxito y re-renderiza el
+ * formulario con el error de validación (ErrorNegocio 400) si el archivo falla. */
+export const vistaSubirFoto: Handler = async (c) => {
+  const parametro = validarParamId(c);
+  if (!parametro.ok) return paginaNoEncontrada(c);
+  const lamina = await obtenerLamina(parametro.id);
+  if (!lamina) return paginaNoEncontrada(c);
+  try {
+    await guardarFotoLamina(parametro.id, (await c.req.parseBody())["foto"]);
+  } catch (e) {
+    if (e instanceof ErrorNegocio) {
+      const album = await obtenerAlbum(lamina.albumId);
+      return renderVista(c, "laminas/form", {
+        titulo: "Editar lámina",
+        modo: "editar",
+        laminaId: lamina.id,
+        albumId: lamina.albumId,
+        albumNombre: album?.nombre ?? "Álbum",
+        datos: lamina,
+        errorGeneral: e.message,
+      });
+    }
+    throw e;
+  }
+  return redirigirConMensaje(c, `/laminas/${lamina.id}/editar`, "Foto subida correctamente");
 };
 
 /** Carga masiva desde el textarea JSON del detalle: valida y reintegra, todo o nada. */

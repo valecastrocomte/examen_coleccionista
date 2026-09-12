@@ -66,6 +66,7 @@
       <tr>
         <th scope="col" class="text-end">N.º</th>
         <th scope="col">Nombre</th>
+        <th scope="col">Foto</th>
         <th scope="col">Tipo</th>
         <th scope="col" class="text-end">Cantidad</th>
         <th scope="col">Estado</th>
@@ -77,6 +78,13 @@
       <tr>
         <td class="text-end"><%= lamina.numero %></td>
         <td><%= lamina.nombre %></td>
+        <td>
+          <% if (lamina.imagen) { %>
+          <img src="<%= lamina.imagen %>" alt="Foto de <%= lamina.nombre %>" class="img-thumbnail" style="width: 44px; height: 44px; object-fit: cover;">
+          <% } else { %>
+          <span class="text-muted" aria-label="Sin foto">—</span>
+          <% } %>
+        </td>
         <td><%= lamina.tipo %></td>
         <td class="text-end"><%= lamina.cantidad %></td>
         <td><%- include("../partials/badge_estado", { lamina }) %></td>
@@ -87,7 +95,6 @@
             <button type="submit" class="btn btn-outline-danger btn-sm" aria-label="Eliminar <%= lamina.nombre %>">Eliminar</button>
           </form>
         </td>
-      </tr>
       <% }) %>
     </tbody>
   </table>

@@ -6,6 +6,7 @@ import { db } from "../db.js";
 import { TipoLamina } from "../generated/prisma/enums.js";
 import type { LaminaModel } from "../generated/prisma/models/Lamina.js";
 import { ErrorNegocio, esErrorPrisma } from "../lib/errores.js";
+import { guardarFoto } from "../lib/upload.js";
 
 const TIPOS_VALIDOS = [
   TipoLamina.COMUN,
@@ -148,6 +149,16 @@ export async function eliminarLamina(id: number): Promise<boolean> {
   return true;
 }
 
+/** Sube la foto de una lámina (BRIEF §7.8): guarda el archivo en uploads/ y
+ * actualiza el campo `imagen` con su URL. null si la lámina no existe; 400
+ * (ErrorNegocio) si el archivo no es una imagen válida o excede 5 MB. */
+export async function guardarFotoLamina(id: number, archivo: unknown): Promise<LaminaModel | null> {
+  const lamina = await obtenerLamina(id);
+  if (!lamina) return null;
+  const url = await guardarFoto(id, archivo);
+  return db.lamina.update({ where: { id }, data: { imagen: url } });
+}
+
 // ----- Estado derivado y carga masiva (BRIEF §7; usadas por las vistas web) -----
 
 /** Estado de una lámina derivado de `cantidad` (BRIEF §7.1): 0/1/≥2. */
@@ -164,6 +175,7 @@ export interface LaminaParaVista {
   albumId: number;
   numero: number;
   nombre: string;
+  imagen: string | null;
   tipo: string;
   cantidad: number;
   cantidadRepetidas: number;
@@ -177,6 +189,7 @@ export function serializarLaminaParaVista(lamina: LaminaModel): LaminaParaVista 
     albumId: lamina.albumId,
     numero: lamina.numero,
     nombre: lamina.nombre,
+    imagen: lamina.imagen,
     tipo: lamina.tipo,
     cantidad: lamina.cantidad,
     cantidadRepetidas: lamina.cantidad - 1,

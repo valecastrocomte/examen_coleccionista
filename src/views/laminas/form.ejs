@@ -14,6 +14,12 @@
 </div>
 <p class="text-muted mb-4">Los campos marcados con * son obligatorios.</p>
 
+<% if (typeof ok !== "undefined" && ok) { %>
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+  <%= ok %>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+</div>
+<% } %>
 <% if (typeof errorGeneral !== "undefined" && errorGeneral) { %>
 <div class="alert alert-danger" role="alert"><%= errorGeneral %></div>
 <% } %>
@@ -72,3 +78,26 @@
 </form>
 
 <%- include("../partials/footer") %>
+
+<% if (modo === "editar") { %>
+<div class="card mt-4">
+  <div class="card-header">Foto de la lámina</div>
+  <div class="card-body">
+    <% if (valor.imagen) { %>
+    <img src="<%= valor.imagen %>" alt="Foto de <%= valor.nombre %>" class="img-thumbnail mb-3" style="max-width: 180px; max-height: 180px; object-fit: cover;">
+    <% } else { %>
+    <p class="text-muted mb-2">Esta lámina todavía no tiene foto.</p>
+    <% } %>
+    <form method="post" action="/laminas/<%= laminaId %>/foto" enctype="multipart/form-data">
+      <label for="foto" class="form-label">Archivo de imagen</label>
+      <input type="file" class="form-control" id="foto" name="foto"
+             accept="image/jpeg,image/png,image/webp,image/gif" aria-describedby="fotoAyuda">
+      <div id="fotoAyuda" class="form-text">
+        Solo <code>jpg</code>, <code>jpeg</code>, <code>png</code>, <code>webp</code> o <code>gif</code>,
+        máximo 5 MB. Subir una foto reemplaza cualquier foto anterior.
+      </div>
+      <button type="submit" class="btn btn-primary mt-3">Subir foto</button>
+    </form>
+  </div>
+</div>
+<% } %>

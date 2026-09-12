@@ -7,6 +7,7 @@ import {
   albumEntradaSchema,
   crearAlbum,
   eliminarAlbum,
+  estadisticasAlbum,
   listarAlbumes,
   obtenerAlbum,
   serializarAlbum,
@@ -57,6 +58,14 @@ export const eliminar: Handler = async (c) => {
   const borrado = await eliminarAlbum(parametro.id);
   if (!borrado) return errorJson(c, 404, NO_ENCONTRADO);
   return new Response(null, { status: 204 });
+};
+
+export const estadisticas: Handler = async (c) => {
+  const parametro = validarParamId(c);
+  if (!parametro.ok) return parametro.respuesta;
+  const estadisticas = await estadisticasAlbum(parametro.id);
+  if (!estadisticas) return errorJson(c, 404, NO_ENCONTRADO);
+  return c.json(estadisticas);
 };
 
 // ============================== Web MVC (HTML) ==============================

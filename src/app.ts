@@ -21,6 +21,7 @@ app.post("/api/albumes", albumCtrl.crear);
 app.get("/api/albumes/:id", albumCtrl.detalle);
 app.put("/api/albumes/:id", albumCtrl.actualizar);
 app.delete("/api/albumes/:id", albumCtrl.eliminar);
+app.get("/api/albumes/:id/estadisticas", albumCtrl.estadisticas);
 
 // ----- API REST: láminas (BRIEF §8.1) -----
 app.get("/api/albumes/:id/laminas", laminaCtrl.listarDeAlbum);
@@ -32,6 +33,7 @@ app.get("/api/laminas/:id", laminaCtrl.detalle);
 app.put("/api/laminas/:id", laminaCtrl.actualizar);
 app.patch("/api/laminas/:id", laminaCtrl.actualizarParcial);
 app.delete("/api/laminas/:id", laminaCtrl.eliminar);
+app.post("/api/laminas/:id/foto", laminaCtrl.subirFoto);
 
 // La web MVC arranca en /albumes (Fase 3); mientras tanto, la raíz redirige ahí.
 app.get("/", (c) => c.redirect("/albumes"));
@@ -52,6 +54,7 @@ app.post("/albumes/:id/laminas/bulk", laminaCtrl.vistaBulk);
 app.get("/laminas/:id/editar", laminaCtrl.vistaFormEditar);
 app.post("/laminas/:id/editar", laminaCtrl.vistaActualizar);
 app.post("/laminas/:id/eliminar", laminaCtrl.vistaEliminar);
+app.post("/laminas/:id/foto", laminaCtrl.vistaSubirFoto);
 
 // Errores JSON uniformes (BRIEF §8.2): 409 de negocio, 400 de Hono y 500.
 app.onError((err, c) => {
