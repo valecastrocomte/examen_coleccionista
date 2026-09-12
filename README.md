@@ -113,8 +113,10 @@ Abrir en el navegador:
 .
 ├── docs/                        # Brief, stack, API, style e informe de pruebas
 ├── prisma/
-│   └── schema.prisma            # Esquema Prisma (modelos Album/Lamina en Fase 1)
-├── prisma7.config.ts            # Configuración Prisma 7 (URL, migraciones)
+│   ├── schema.prisma            # Esquema Prisma (modelos Album, Lamina, enum TipoLamina)
+│   ├── migrations/              # Migraciones versionadas (init en Fase 1)
+│   └── seed.ts                  # Datos de ejemplo: 1 álbum + láminas (estados 0/1/≥2)
+├── prisma7.config.ts            # Configuración Prisma 7 (URL, migraciones, seed)
 ├── src/
 │   ├── index.ts                 # Arranque del servidor
 │   ├── app.ts                   # App Hono: middleware, estáticos, rutas
@@ -132,5 +134,5 @@ Abrir en el navegador:
 ├── roadmap.md
 └── AGENT.md
 
-Pendiente de fases siguientes: `src/models/`, `src/controllers/`, `src/views/`,
-`src/lib/upload.ts`, `prisma/migrations/` y `prisma/seed.ts`.
+Pendiente de fases siguientes: `src/models/`, `src/controllers/`, `src/views/` y
+`src/lib/upload.ts`.

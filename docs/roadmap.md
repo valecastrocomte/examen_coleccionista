@@ -2,7 +2,7 @@
 
 Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (Hono + Prisma + TypeScript + MySQL, arquitectura MVC, vistas Bootstrap oscuras).
 
-- **Estado general:** 🟢 En desarrollo — Fase 0 completada (servidor Hono + MySQL vía Prisma operativos); sigue Fase 1.
+- **Estado general:** 🟢 En desarrollo — Fases 0 y 1 completadas (servidor + modelo de datos Prisma); sigue Fase 2.
 - **Fuente de requisitos:** [`docs/BRIEF.md`](docs/BRIEF.md) — ante cualquier duda, manda el BRIEF.
 
 ---
@@ -12,7 +12,7 @@ Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (H
 | Fase | Nombre | Estado |
 |---|---|---|
 | 0 | Setup del proyecto y MySQL | ✅ Completada |
-| 1 | Modelo de datos (Prisma) | ⬜ Pendiente |
+| 1 | Modelo de datos (Prisma) | ✅ Completada |
 | 2 | API REST CRUD (álbumes y láminas) | ⬜ Pendiente |
 | 3 | Interfaces web MVC + Bootstrap | ⬜ Pendiente |
 | 4 | Reglas de negocio (bulk, faltantes, repetidas) | ⬜ Pendiente |
@@ -44,15 +44,17 @@ Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (H
 
 **Objetivo:** entidades `Album` y `Lamina` del BRIEF §6 con migración aplicada.
 
-- [ ] Definir `Album` (nombre, imagen, fechaLanzamiento, tipoLaminas, descripcion, auditoría).
-- [ ] Definir `Lamina` (albumId FK cascade, numero, nombre, tipo, cantidad, imagen) + `@@unique([albumId, numero])`.
-- [ ] Definir enum `TipoLamina` (COMUN, RARA, EPICA, LEGENDARIA).
-- [ ] `npx prisma migrate dev --name init`.
-- [ ] Seed `prisma/seed.ts` con 1 álbum y láminas que cubran los 3 estados (0, 1 y ≥2 copias).
-- [ ] `npx prisma db seed` y verificar en `prisma studio`.
+- [x] Definir `Album` (nombre, imagen, fechaLanzamiento, tipoLaminas, descripcion, auditoría).
+- [x] Definir `Lamina` (albumId FK cascade, numero, nombre, tipo, cantidad, imagen) + `@@unique([albumId, numero])`.
+- [x] Definir enum `TipoLamina` (COMUN, RARA, EPICA, LEGENDARIA).
+- [x] `npx prisma migrate dev --name init`.
+- [x] Seed `prisma/seed.ts` con 1 álbum y láminas que cubran los 3 estados (0, 1 y ≥2 copias).
+- [x] `npx prisma db seed` y verificar en `prisma studio`.
 
 **Cierre:** tablas creadas en MySQL y seed visible en `prisma studio`.
 **Actualiza:** `README.md` (si cambian comandos) · `roadmap.md`.
+
+> **Cierre verificado (2026-09-12):** migración `init` aplicada — tablas `Album` y `Lamina` con enum `TipoLamina`, FK `ON DELETE CASCADE` e índice único `(albumId, numero)`; seed con 1 álbum ("Copa Mundial 2026") y 6 láminas que cubren 0, 1, 2 y 3 copias. Verificado en `prisma studio` (tablas + filas) y con consultas Prisma: el duplicado de un número dentro del álbum se bloquea con P2002; `npm test` (3 smoke) y `npm run build` pasan.
 
 ---
 

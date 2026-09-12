@@ -1,7 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
+// Esquema Prisma del Sistema de Gestión de Colecciones de Láminas.
+// Documentación del modelo: docs/BRIEF.md §6 (tablas Album y Lamina).
 
 generator client {
   provider = "prisma-client"
@@ -10,4 +8,43 @@ generator client {
 
 datasource db {
   provider = "mysql"
+}
+
+/// Rareza de una lámina (BRIEF §6, decisión D6).
+enum TipoLamina {
+  COMUN
+  RARA
+  EPICA
+  LEGENDARIA
+}
+
+/// Álbum de colección: contiene N láminas y guarda metadatos del álbum.
+model Album {
+  id               Int      @id @default(autoincrement())
+  nombre           String   @db.VarChar(255)
+  imagen           String?  @db.VarChar(500)
+  fechaLanzamiento DateTime @db.Date
+  tipoLaminas      String   @db.VarChar(100)
+  descripcion      String?  @db.Text
+  creadoEn         DateTime @default(now())
+  actualizadoEn    DateTime @updatedAt
+  laminas          Lamina[]
+}
+
+/// Lámina dentro de un álbum. El estado (faltante/única/repetida) se
+/// deriva de `cantidad` (BRIEF §7): 0 = FALTANTE, 1 = ÚNICA, ≥2 = REPETIDA.
+model Lamina {
+  id            Int        @id @default(autoincrement())
+  album         Album      @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  albumId       Int
+  numero        Int
+  nombre        String     @db.VarChar(255)
+  tipo          TipoLamina
+  imagen        String?    @db.VarChar(500)
+  cantidad      Int        @default(0)
+  creadoEn      DateTime   @default(now())
+  actualizadoEn DateTime   @updatedAt
+
+  /// Una lámina no puede repetir su número dentro del mismo álbum.
+  @@unique([albumId, numero])
 }
