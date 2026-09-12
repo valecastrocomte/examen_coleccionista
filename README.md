@@ -142,4 +142,4 @@ Abrir en el navegador:
 ├── README.md                    # Este archivo
 └── AGENT.md
 
-Pendiente de fases siguientes: informe de pruebas con screenshots (`docs/INFORME_PRUEBAS.md`, Fase 7).
+Pendiente de fases siguientes: Fase 8 — refinamiento final y entrega (`docs/roadmap.md`).

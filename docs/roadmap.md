@@ -2,7 +2,7 @@
 
 Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (Hono + Prisma + TypeScript + MySQL, arquitectura MVC, vistas Bootstrap oscuras).
 
-- **Estado general:** 🟢 En desarrollo — Fases 0–6 completadas (servidor, modelo de datos, API REST, vistas web MVC, reglas de negocio, fotos de láminas y documentación de consumo); sigue Fase 7.
+- **Estado general:** 🟢 En desarrollo — Fases 0–7 completadas (servidor, modelo de datos, API REST, vistas web MVC, reglas de negocio, fotos de láminas, documentación de consumo y pruebas con informe); sigue Fase 8.
 - **Fuente de requisitos:** [`docs/BRIEF.md`](docs/BRIEF.md) — ante cualquier duda, manda el BRIEF.
 
 ---
@@ -18,7 +18,7 @@ Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (H
 | 4 | Reglas de negocio (bulk, faltantes, repetidas) | ✅ Completada |
 | 5 | Fotos de láminas | ✅ Completada |
 | 6 | Documentación de consumo (API.md) | ✅ Completada |
-| 7 | Pruebas + informe con screenshots | ⬜ Pendiente |
+| 7 | Pruebas + informe con screenshots | ✅ Completada |
 | 8 | Refinamiento final y entrega | ⬜ Pendiente |
 
 ---
@@ -147,12 +147,14 @@ Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (H
 
 **Objetivo:** cumplir RF-4.2 del BRIEF.
 
-- [ ] Recorrer TODOS los endpoints de `docs/API.md` con Thunder Client/Postman.
-- [ ] Capturar un screenshot por prueba (éxito y errores 400/404/409).
-- [ ] Capturar screenshots de las vistas web (listado, detalle, formularios, faltantes/repetidas).
-- [ ] Consolidar en `docs/INFORME_PRUEBAS.md` con resultado esperado vs obtenido.
+- [x] Recorrer TODOS los endpoints de `docs/API.md` con Thunder Client/Postman.
+- [x] Capturar un screenshot por prueba (éxito y errores 400/404/409).
+- [x] Capturar screenshots de las vistas web (listado, detalle, formularios, faltantes/repetidas).
+- [x] Consolidar en `docs/INFORME_PRUEBAS.md` con resultado esperado vs obtenido.
 
 **Cierre:** informe completo con screenshot por cada prueba.
+
+> **Cierre verificado (2026-09-12):** 31 pruebas manuales contra el servidor en vivo — 26 de API (todos los endpoints de `docs/API.md` con éxito y errores 400/404/409) + 5 vistas MVC + 1 flujo de alta web con PRG — con screenshot por prueba en `docs/screenshots/` (33 PNG) y resultado esperado vs obtenido anotado en el propio screenshot. Resumen: 100 % de coincidencia esperado vs obtenido; la BD quedó restablecida al seed (álbum 1 + 6 láminas). Se usó un cliente de pruebas manual (estilo Thunder Client) temporal y se retiró al terminar; los tests Vitest (`npm test` = 38) complementan la evidencia.
 
 ---
 
