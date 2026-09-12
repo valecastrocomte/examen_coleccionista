@@ -142,4 +142,4 @@ Abrir en el navegador:
 ├── README.md                    # Este archivo
 └── AGENT.md
 
-Pendiente de fases siguientes: documentación de consumo (`docs/API.md`, Fase 6).
+Pendiente de fases siguientes: informe de pruebas con screenshots (`docs/INFORME_PRUEBAS.md`, Fase 7).

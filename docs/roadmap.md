@@ -2,7 +2,7 @@
 
 Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (Hono + Prisma + TypeScript + MySQL, arquitectura MVC, vistas Bootstrap oscuras).
 
-- **Estado general:** 🟢 En desarrollo — Fases 0–5 completadas (servidor, modelo de datos, API REST, vistas web MVC, reglas de negocio y fotos de láminas); sigue Fase 6.
+- **Estado general:** 🟢 En desarrollo — Fases 0–6 completadas (servidor, modelo de datos, API REST, vistas web MVC, reglas de negocio, fotos de láminas y documentación de consumo); sigue Fase 7.
 - **Fuente de requisitos:** [`docs/BRIEF.md`](docs/BRIEF.md) — ante cualquier duda, manda el BRIEF.
 
 ---
@@ -17,7 +17,7 @@ Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (H
 | 3 | Interfaces web MVC + Bootstrap | ✅ Completada |
 | 4 | Reglas de negocio (bulk, faltantes, repetidas) | ✅ Completada |
 | 5 | Fotos de láminas | ✅ Completada |
-| 6 | Documentación de consumo (API.md) | ⬜ Pendiente |
+| 6 | Documentación de consumo (API.md) | ✅ Completada |
 | 7 | Pruebas + informe con screenshots | ⬜ Pendiente |
 | 8 | Refinamiento final y entrega | ⬜ Pendiente |
 
@@ -133,11 +133,13 @@ Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (H
 
 **Objetivo:** cumplir RF-4.1 del BRIEF.
 
-- [ ] Redactar `docs/API.md` con todos los métodos, Request/Response y códigos.
-- [ ] Incluir ejemplos copiables para Thunder Client/Postman.
-- [ ] Documentar el formato de error y los casos 400/404/409.
+- [x] Redactar `docs/API.md` con todos los métodos, Request/Response y códigos.
+- [x] Incluir ejemplos copiables para Thunder Client/Postman.
+- [x] Documentar el formato de error y los casos 400/404/409.
 
 **Cierre:** cualquier persona replica todos los endpoints con solo leer `docs/API.md`.
+
+> **Cierre verificado (2026-09-12):** `docs/API.md` redactada con los 17 endpoints reales (`/api/*` + `/uploads/*`): por cada uno, método, ruta, body JSON copiable, respuesta 2xx con ejemplo y códigos de error; sección §8 dedicada al formato uniforme `{ "error", "detalles" }` con casos 400 (validación por campo, `lote[i].campo`, foto), 404 (álbum/lámina/recurso) y 409 (duplicado `(albumId, numero)`, rollback del bulk). Refleja los shapes verdaderos de controllers/models (no el BRIEF): verificado en vivo contra el servidor — curl con 200/400/404/409 coinciden con la doc (listado, estadísticas 66.7, repetidas con `cantidadRepetidas`, 404 álbum, 400 campos obligatorios, 409 duplicado) y `npm test` = 38 tests verdes. Los ejemplos se pueden pegar directo en Thunder Client/Postman (JSON raw) o curl.
 
 ---
 
