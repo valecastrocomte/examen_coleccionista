@@ -1,0 +1,74 @@
+<%- include("../partials/header") %>
+<%
+  function erroresDe(campo) {
+    return typeof errores !== "undefined" && errores ? errores.filter((e) => e.campo === campo) : [];
+  }
+  const valor = typeof datos !== "undefined" && datos ? datos : {};
+  const volver = "/albumes/" + albumId;
+  const accion = modo === "editar" ? "/laminas/" + laminaId + "/editar" : "/albumes/" + albumId + "/laminas";
+%>
+
+<div class="d-flex align-items-center mb-4">
+  <h1 class="mb-0"><%= modo === "editar" ? "Editar lámina" : "Nueva lámina" %></h1>
+  <span class="text-muted ms-3"><%= albumNombre %></span>
+</div>
+<p class="text-muted mb-4">Los campos marcados con * son obligatorios.</p>
+
+<% if (typeof errorGeneral !== "undefined" && errorGeneral) { %>
+<div class="alert alert-danger" role="alert"><%= errorGeneral %></div>
+<% } %>
+
+<form method="post" action="<%= accion %>" novalidate>
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="mb-3">
+        <% const errNumero = erroresDe("numero"); %>
+        <label for="numero" class="form-label">Número *</label>
+        <input type="number" class="form-control <%= errNumero.length ? "is-invalid" : "" %>" id="numero" name="numero"
+               min="1" step="1" required value="<%= valor.numero ?? "" %>">
+        <% errNumero.forEach((e) => { %><div class="invalid-feedback"><%= e.mensaje %></div><% }) %>
+      </div>
+      <div class="mb-3">
+        <% const errNombre = erroresDe("nombre"); %>
+        <label for="nombre" class="form-label">Nombre *</label>
+        <input type="text" class="form-control <%= errNombre.length ? "is-invalid" : "" %>" id="nombre" name="nombre"
+               maxlength="255" required value="<%= valor.nombre ?? "" %>">
+        <% errNombre.forEach((e) => { %><div class="invalid-feedback"><%= e.mensaje %></div><% }) %>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="mb-3">
+        <% const errTipo = erroresDe("tipo"); %>
+        <label for="tipo" class="form-label">Tipo (rareza) *</label>
+        <select class="form-select <%= errTipo.length ? "is-invalid" : "" %>" id="tipo" name="tipo" required>
+          <% const tipos = ["COMUN", "RARA", "EPICA", "LEGENDARIA"]; %>
+          <% tipos.forEach((t) => { %>
+          <option value="<%= t %>" <%= valor.tipo === t ? "selected" : "" %>><%= t %></option>
+          <% }) %>
+        </select>
+        <% errTipo.forEach((e) => { %><div class="invalid-feedback"><%= e.mensaje %></div><% }) %>
+      </div>
+      <div class="mb-3">
+        <% const errCantidad = erroresDe("cantidad"); %>
+        <label for="cantidad" class="form-label">Cantidad (0 = faltante, 1 = única, ≥2 = repetida)</label>
+        <input type="number" class="form-control <%= errCantidad.length ? "is-invalid" : "" %>" id="cantidad" name="cantidad"
+               min="0" step="1" value="<%= valor.cantidad ?? "" %>">
+        <% errCantidad.forEach((e) => { %><div class="invalid-feedback"><%= e.mensaje %></div><% }) %>
+      </div>
+      <div class="mb-3">
+        <% const errImagen = erroresDe("imagen"); %>
+        <label for="imagen" class="form-label">URL de imagen (opcional)</label>
+        <input type="url" class="form-control <%= errImagen.length ? "is-invalid" : "" %>" id="imagen" name="imagen"
+               maxlength="500" value="<%= valor.imagen ?? "" %>" placeholder="https://…">
+        <% errImagen.forEach((e) => { %><div class="invalid-feedback"><%= e.mensaje %></div><% }) %>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex gap-2">
+    <button type="submit" class="btn btn-primary"><%= modo === "editar" ? "Guardar cambios" : "Agregar lámina" %></button>
+    <a class="btn btn-outline-secondary" href="<%= volver %>">Cancelar</a>
+  </div>
+</form>
+
+<%- include("../partials/footer") %>

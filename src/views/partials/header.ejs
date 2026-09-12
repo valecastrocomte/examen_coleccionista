@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= typeof titulo !== "undefined" && titulo ? titulo : "Coleccionista" %> · Coleccionista de Láminas</title>
+  <link rel="stylesheet" href="/public/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/public/css/app.css">
+</head>
+<body>
+<%- include("nav", { active: typeof active !== "undefined" ? active : "albumes" }) %>
+<main class="container-fluid container-app py-4">

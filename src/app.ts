@@ -33,6 +33,23 @@ app.delete("/api/laminas/:id", laminaCtrl.eliminar);
 // La web MVC arranca en /albumes (Fase 3); mientras tanto, la raíz redirige ahí.
 app.get("/", (c) => c.redirect("/albumes"));
 
+// ----- Web MVC (BRIEF §8.3): mismas models/controllers, respuesta HTML -----
+app.get("/albumes", albumCtrl.vistaListar);
+app.get("/albumes/nuevo", albumCtrl.vistaFormNuevo);
+app.post("/albumes", albumCtrl.vistaCrear);
+app.get("/albumes/:id", albumCtrl.vistaDetalle);
+app.get("/albumes/:id/editar", albumCtrl.vistaFormEditar);
+app.post("/albumes/:id/editar", albumCtrl.vistaActualizar);
+app.post("/albumes/:id/eliminar", albumCtrl.vistaEliminar);
+app.get("/albumes/:id/laminas/faltantes", laminaCtrl.vistaFaltantes);
+app.get("/albumes/:id/laminas/repetidas", laminaCtrl.vistaRepetidas);
+app.get("/albumes/:id/laminas/nueva", laminaCtrl.vistaFormNueva);
+app.post("/albumes/:id/laminas", laminaCtrl.vistaAgregar);
+app.post("/albumes/:id/laminas/bulk", laminaCtrl.vistaBulk);
+app.get("/laminas/:id/editar", laminaCtrl.vistaFormEditar);
+app.post("/laminas/:id/editar", laminaCtrl.vistaActualizar);
+app.post("/laminas/:id/eliminar", laminaCtrl.vistaEliminar);
+
 // Errores JSON uniformes (BRIEF §8.2): 409 de negocio, 400 de Hono y 500.
 app.onError((err, c) => {
   if (err instanceof ErrorNegocio) {

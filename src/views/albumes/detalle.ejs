@@ -1,0 +1,127 @@
+<%- include("../partials/header") %>
+
+<% if (typeof ok !== "undefined" && ok) { %>
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+  <%= ok %>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+</div>
+<% } %>
+<% if (typeof error !== "undefined" && error) { %>
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+  <%= error %>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+</div>
+<% } %>
+
+<div class="card mb-4">
+  <div class="row g-0">
+    <div class="col-md-3">
+      <% if (album.imagen) { %>
+      <img src="<%= album.imagen %>" class="img-fluid rounded" alt="Portada de <%= album.nombre %>" style="max-height: 220px; object-fit: cover;">
+      <% } else { %>
+      <div class="h-100 portada-placeholder" role="img" aria-label="Sin portada"></div>
+      <% } %>
+    </div>
+    <div class="col-md-9">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start flex-wrap">
+          <div>
+            <h1 class="h3 mb-1"><%= album.nombre %></h1>
+            <p class="text-muted mb-1">
+              <%= album.tipoLaminas %> · Lanzamiento <%= album.fechaLanzamiento %>
+            </p>
+            <% if (album.descripcion) { %><p class="text-muted mb-2"><%= album.descripcion %></p><% } %>
+          </div>
+          <div class="text-end">
+            <span class="badge text-bg-success"><%= album.totalLaminas - album.faltantes - album.repetidas %> únicas</span>
+            <span class="badge text-bg-danger"><%= album.faltantes %> faltantes</span>
+            <span class="badge text-bg-warning"><%= album.repetidas %> repetidas</span>
+            <p class="text-muted small mt-1"><%= album.totalLaminas %> láminas en total</p>
+          </div>
+        </div>
+        <div class="mt-3">
+          <a class="btn btn-outline-secondary btn-sm" href="/albumes">Volver</a>
+          <a class="btn btn-outline-secondary btn-sm" href="/albumes/<%= album.id %>/laminas/faltantes">Ver faltantes</a>
+          <a class="btn btn-outline-secondary btn-sm" href="/albumes/<%= album.id %>/laminas/repetidas">Ver repetidas</a>
+          <a class="btn btn-primary btn-sm" href="/albumes/<%= album.id %>/editar">Editar álbum</a>
+          <form method="post" action="/albumes/<%= album.id %>/eliminar" class="d-inline"
+                onsubmit="return confirm('¿Eliminar el álbum \'<%= album.nombre %>\' y todas sus láminas?')">
+            <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar álbum</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2 class="h5">Láminas</h2>
+<div class="d-flex justify-content-end mb-2">
+  <a class="btn btn-primary btn-sm" href="/albumes/<%= album.id %>/laminas/nueva">Agregar lámina</a>
+</div>
+
+<% if (laminas.length > 0) { %>
+<div class="table-responsive">
+  <table class="table table-striped align-middle">
+    <thead>
+      <tr>
+        <th scope="col" class="text-end">N.º</th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Tipo</th>
+        <th scope="col" class="text-end">Cantidad</th>
+        <th scope="col">Estado</th>
+        <th scope="col" class="text-end">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% laminas.forEach((lamina) => { %>
+      <tr>
+        <td class="text-end"><%= lamina.numero %></td>
+        <td><%= lamina.nombre %></td>
+        <td><%= lamina.tipo %></td>
+        <td class="text-end"><%= lamina.cantidad %></td>
+        <td><%- include("../partials/badge_estado", { lamina }) %></td>
+        <td class="text-end">
+          <a class="btn btn-outline-secondary btn-sm" href="/laminas/<%= lamina.id %>/editar">Editar</a>
+          <form method="post" action="/laminas/<%= lamina.id %>/eliminar" class="d-inline"
+                onsubmit="return confirm('¿Eliminar la lámina \'<%= lamina.nombre %>\'?')">
+            <button type="submit" class="btn btn-outline-danger btn-sm" aria-label="Eliminar <%= lamina.nombre %>">Eliminar</button>
+          </form>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<% } else { %>
+<div class="alert alert-info" role="alert">Este álbum todavía no tiene láminas. Agregalas una a una o con la carga masiva de abajo.</div>
+<% } %>
+
+<h2 class="h5 mt-4 mb-3">Carga masiva de láminas</h2>
+<div class="card">
+  <div class="card-header">Cargar listado JSON (todo o nada)</div>
+  <div class="card-body">
+    <% if (typeof erroresBulk !== "undefined" && erroresBulk && erroresBulk.length > 0) { %>
+    <div class="alert alert-danger" role="alert">
+      <strong>No se cargó ninguna lámina.</strong> Corregí los errores:
+      <ul class="mb-0">
+        <% erroresBulk.forEach((e) => { %>
+        <li><%= e.indice !== undefined ? "[" + e.indice + "] " : "" %><%= e.campo %>: <%= e.mensaje %></li>
+        <% }) %>
+      </ul>
+    </div>
+    <% } %>
+    <form method="post" action="/albumes/<%= album.id %>/laminas/bulk">
+      <textarea class="form-control font-monospace" name="laminas" rows="8"
+                aria-describedby="bulkAyuda"
+                placeholder='[{"numero":1,"nombre":"Lionel Messi","tipo":"EPICA","cantidad":3},{"numero":2,"nombre":"Diego Maradona","tipo":"LEGENDARIA"}]'></textarea>
+      <div id="bulkAyuda" class="form-text">
+        Un array JSON con los campos: <code>numero</code> (obligatorio, entero), <code>nombre</code> (obligatorio),
+        <code>tipo</code> (COMUN, RARA, EPICA, LEGENDARIA), <code>cantidad</code> (opcional, ≥ 0).
+        Si algo falla no se inserta ninguna lámina.
+      </div>
+      <button type="submit" class="btn btn-primary mt-3">Cargar láminas</button>
+    </form>
+  </div>
+</div>
+
+<%- include("../partials/footer") %>

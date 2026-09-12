@@ -1,0 +1,7 @@
+<% if (lamina.estado === "FALTANTE") { %>
+<span class="badge text-bg-danger">Faltante</span>
+<% } else if (lamina.estado === "UNICA") { %>
+<span class="badge text-bg-success">Única</span>
+<% } else { %>
+<span class="badge text-bg-warning">Repetida ×<%= lamina.cantidadRepetidas %></span>
+<% } %>

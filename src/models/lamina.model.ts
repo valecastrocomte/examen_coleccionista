@@ -147,3 +147,114 @@ export async function eliminarLamina(id: number): Promise<boolean> {
   await db.lamina.delete({ where: { id } });
   return true;
 }
+
+// ----- Estado derivado y carga masiva (BRIEF §7; usadas por las vistas web) -----
+
+/** Estado de una lámina derivado de `cantidad` (BRIEF §7.1): 0/1/≥2. */
+export type EstadoLamina = "FALTANTE" | "UNICA" | "REPETIDA";
+
+export function estadoLamina(cantidad: number): EstadoLamina {
+  if (cantidad === 0) return "FALTANTE";
+  if (cantidad === 1) return "UNICA";
+  return "REPETIDA";
+}
+
+export interface LaminaParaVista {
+  id: number;
+  albumId: number;
+  numero: number;
+  nombre: string;
+  tipo: string;
+  cantidad: number;
+  cantidadRepetidas: number;
+  estado: EstadoLamina;
+}
+
+/** Lámina lista para las vistas: campos + estado derivado + repetidas (cantidad − 1). */
+export function serializarLaminaParaVista(lamina: LaminaModel): LaminaParaVista {
+  return {
+    id: lamina.id,
+    albumId: lamina.albumId,
+    numero: lamina.numero,
+    nombre: lamina.nombre,
+    tipo: lamina.tipo,
+    cantidad: lamina.cantidad,
+    cantidadRepetidas: lamina.cantidad - 1,
+    estado: estadoLamina(lamina.cantidad),
+  };
+}
+
+export interface ErrorBulk {
+  indice: number;
+  campo: string;
+  mensaje: string;
+}
+
+/**
+ * Carga masiva transaccional (BRIEF §7.4): o se insertan TODAS las láminas o
+ * ninguna. Cada elemento se valida con el esquema Zod de entrada; si un índice
+ * falla se devuelven los errores por índice. Un duplicado (P2002) revierte
+ * toda la transacción y lanza 409.
+ */
+export async function crearLaminasBulk(
+  albumId: number,
+  laminas: LaminaEntrada[],
+): Promise<LaminaModel[] | ErrorBulk[]> {
+  try {
+    return await db.$transaction(async (tx) => {
+      const creadas: LaminaModel[] = [];
+      for (const datos of laminas) {
+        creadas.push(
+          await tx.lamina.create({
+            data: {
+              albumId,
+              numero: datos.numero,
+              nombre: datos.nombre,
+              tipo: datos.tipo,
+              imagen: datos.imagen?.trim() || null,
+              cantidad: datos.cantidad,
+            },
+          }),
+        );
+      }
+      return creadas;
+    });
+  } catch (e) {
+    if (esErrorPrisma(e, "P2002")) {
+      throw new ErrorNegocio(409, "Ya existe una lámina con ese número en este álbum; no se cargó ninguna");
+    }
+    throw e;
+  }
+}
+
+export type ResultadoLote =
+  | { ok: true; laminas: LaminaEntrada[] }
+  | { ok: false; errores: ErrorBulk[] };
+
+/**
+ * Valida un lote de láminas contra el esquema: errores por índice, sin tocar
+ * la BD. Si alguna entrada falla, se devuelven los errores y NADA se inserta.
+ */
+export function validarLoteLaminas(crudo: unknown): ResultadoLote {
+  if (!Array.isArray(crudo)) {
+    return {
+      ok: false,
+      errores: [{ indice: 0, campo: "(lote)", mensaje: "el cuerpo debe ser un array JSON de láminas" }],
+    };
+  }
+  const errores: ErrorBulk[] = [];
+  const laminas: LaminaEntrada[] = [];
+  crudo.forEach((elemento, indice) => {
+    const resultado = laminaEntradaSchema.safeParse(elemento);
+    if (resultado.success) {
+      laminas.push(resultado.data);
+      return;
+    }
+    for (const issue of resultado.error.issues) {
+      const campo =
+        Array.isArray(issue.path) && issue.path.length > 0 ? issue.path.join(".") : "(lámina)";
+      errores.push({ indice, campo, mensaje: issue.message ?? "dato inválido" });
+    }
+  });
+  return errores.length > 0 ? { ok: false, errores } : { ok: true, laminas };
+}

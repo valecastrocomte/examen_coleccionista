@@ -15,7 +15,7 @@ Esta guía define la apariencia de todas las vistas EJS del proyecto (arquitectu
 
 ## 2. Paleta de colores
 
-Variable en `src/public/css/app.css` (cargado en el `header.ejs`):
+Variable en `public/css/app.css` (cargado en el `header.ejs`):
 
 | Rol | Variable | Valor | Uso |
 |---|---|---|---|

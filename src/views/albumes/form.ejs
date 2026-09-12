@@ -1,0 +1,63 @@
+<%- include("../partials/header") %>
+<%
+  function erroresDe(campo) {
+    return typeof errores !== "undefined" && errores ? errores.filter((e) => e.campo === campo) : [];
+  }
+  const valor = typeof datos !== "undefined" && datos ? datos : {};
+  const accion = modo === "editar" ? "/albumes/" + albumId + "/editar" : "/albumes";
+%>
+
+<h1 class="mb-1"><%= modo === "editar" ? "Editar álbum" : "Nuevo álbum" %></h1>
+<p class="text-muted mb-4">Los campos marcados con * son obligatorios.</p>
+
+<form method="post" action="<%= accion %>" novalidate>
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="mb-3">
+        <% const errNombre = erroresDe("nombre"); %>
+        <label for="nombre" class="form-label">Nombre *</label>
+        <input type="text" class="form-control <%= errNombre.length ? "is-invalid" : "" %>" id="nombre" name="nombre"
+               maxlength="255" required value="<%= valor.nombre ?? "" %>">
+        <% errNombre.forEach((e) => { %><div class="invalid-feedback"><%= e.mensaje %></div><% }) %>
+      </div>
+      <div class="mb-3">
+        <% const errTipoLaminas = erroresDe("tipoLaminas"); %>
+        <label for="tipoLaminas" class="form-label">Tipo de láminas *</label>
+        <input type="text" class="form-control <%= errTipoLaminas.length ? "is-invalid" : "" %>" id="tipoLaminas" name="tipoLaminas"
+               maxlength="100" required value="<%= valor.tipoLaminas ?? "" %>"
+               placeholder="Ej.: Fútbol, Música, Cine…">
+        <% errTipoLaminas.forEach((e) => { %><div class="invalid-feedback"><%= e.mensaje %></div><% }) %>
+      </div>
+      <div class="mb-3">
+        <% const errFecha = erroresDe("fechaLanzamiento"); %>
+        <label for="fechaLanzamiento" class="form-label">Fecha de lanzamiento *</label>
+        <input type="date" class="form-control <%= errFecha.length ? "is-invalid" : "" %>" id="fechaLanzamiento"
+               name="fechaLanzamiento" required value="<%= valor.fechaLanzamiento ?? "" %>">
+        <% errFecha.forEach((e) => { %><div class="invalid-feedback"><%= e.mensaje %></div><% }) %>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="mb-3">
+        <% const errImagen = erroresDe("imagen"); %>
+        <label for="imagen" class="form-label">URL de portada (opcional)</label>
+        <input type="url" class="form-control <%= errImagen.length ? "is-invalid" : "" %>" id="imagen" name="imagen"
+               maxlength="500" value="<%= valor.imagen ?? "" %>" placeholder="https://…">
+        <% errImagen.forEach((e) => { %><div class="invalid-feedback"><%= e.mensaje %></div><% }) %>
+      </div>
+      <div class="mb-3">
+        <% const errDescripcion = erroresDe("descripcion"); %>
+        <label for="descripcion" class="form-label">Descripción (opcional)</label>
+        <textarea class="form-control <%= errDescripcion.length ? "is-invalid" : "" %>" id="descripcion" name="descripcion"
+                  rows="4" maxlength="65535"><%= valor.descripcion ?? "" %></textarea>
+        <% errDescripcion.forEach((e) => { %><div class="invalid-feedback"><%= e.mensaje %></div><% }) %>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex gap-2">
+    <button type="submit" class="btn btn-primary"><%= modo === "editar" ? "Guardar cambios" : "Crear álbum" %></button>
+    <a class="btn btn-outline-secondary" href="<%= modo === "editar" ? "/albumes/" + albumId : "/albumes" %>">Cancelar</a>
+  </div>
+</form>
+
+<%- include("../partials/footer") %>

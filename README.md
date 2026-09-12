@@ -119,14 +119,17 @@ Abrir en el navegador:
 ├── prisma7.config.ts            # Configuración Prisma 7 (URL, migraciones, seed)
 ├── src/
 │   ├── index.ts                 # Arranque del servidor
-│   ├── app.ts                   # App Hono: middleware, estáticos, rutas
+│   ├── app.ts                   # App Hono: middleware, estáticos y rutas (API + web)
 │   ├── db.ts                    # Instancia única de PrismaClient (MySQL)
 │   ├── models/                  # Esquemas Zod + queries Prisma (album, lamina, parametros)
-│   ├── controllers/             # Resuelven peticiones JSON (/api/*) y HTML (Fase 3)
-│   ├── lib/                     # errores.ts (JSON uniforme) · validacion.ts (Zod safeParse)
+│   ├── controllers/             # API JSON (/api/*) y web MVC (mismos models)
+│   ├── lib/                     # errores.ts (JSON uniforme) · validacion.ts (Zod) · vistas.ts (EJS)
+│   ├── views/                   # Plantillas EJS: partials/, albumes/, laminas/
 │   ├── generated/prisma/        # Cliente Prisma generado (no editar)
-│   ├── public/vendor/bootstrap/ # Assets de Bootstrap (`npm run bootstrap`)
 │   └── uploads/                 # Fotos subidas (en gitignore)
+├── public/
+│   ├── css/app.css              # Tema oscuro (paleta de docs/style.md §2)
+│   └── vendor/bootstrap/        # Assets de Bootstrap (`npm run bootstrap`)
 ├── scripts/
 │   └── copiar-bootstrap.mjs     # Copia Bootstrap de node_modules/ a public/
 ├── tests/
@@ -137,4 +140,4 @@ Abrir en el navegador:
 ├── README.md                    # Este archivo
 └── AGENT.md
 
-Pendiente de fases siguientes: `src/views/` (Fase 3) y `src/lib/upload.ts` (Fase 5).
+Pendiente de fases siguientes: `src/lib/upload.ts` (Fase 5, fotos).

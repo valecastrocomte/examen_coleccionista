@@ -1,0 +1,47 @@
+<%- include("../partials/header") %>
+
+<div class="d-flex align-items-center mb-2">
+  <h1 class="mb-0">Láminas faltantes</h1>
+  <span class="text-muted ms-3"><%= album.nombre %></span>
+</div>
+<p class="text-muted mb-4">Láminas con cantidad 0: todavía no las tenés.</p>
+
+<div class="card">
+  <div class="card-header"><%= totalFaltantes %> faltantes</div>
+  <div class="card-body p-0">
+    <% if (faltantes.length > 0) { %>
+    <div class="table-responsive">
+      <table class="table table-striped align-middle mb-0">
+        <thead>
+          <tr>
+            <th scope="col" class="text-end">N.º</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Tipo</th>
+            <th scope="col" class="text-end">Cantidad</th>
+            <th scope="col">Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% faltantes.forEach((lamina) => { %>
+          <tr>
+            <td class="text-end"><%= lamina.numero %></td>
+            <td><%= lamina.nombre %></td>
+            <td><%= lamina.tipo %></td>
+            <td class="text-end"><%= lamina.cantidad %></td>
+            <td><%- include("../partials/badge_estado", { lamina }) %></td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <% } else { %>
+    <div class="alert alert-success m-3">¡No hay faltantes! Tenés al menos una copia de cada lámina.</div>
+    <% } %>
+  </div>
+</div>
+
+<div class="mt-3">
+  <a class="btn btn-outline-secondary" href="/albumes/<%= album.id %>">Volver al álbum</a>
+</div>
+
+<%- include("../partials/footer") %>

@@ -2,7 +2,7 @@
 
 Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (Hono + Prisma + TypeScript + MySQL, arquitectura MVC, vistas Bootstrap oscuras).
 
-- **Estado general:** 🟢 En desarrollo — Fases 0–2 completadas (servidor, modelo de datos y API REST CRUD); sigue Fase 3.
+- **Estado general:** 🟢 En desarrollo — Fases 0–3 completadas (servidor, modelo de datos, API REST y vistas web MVC); sigue Fase 4.
 - **Fuente de requisitos:** [`docs/BRIEF.md`](docs/BRIEF.md) — ante cualquier duda, manda el BRIEF.
 
 ---
@@ -14,7 +14,7 @@ Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (H
 | 0 | Setup del proyecto y MySQL | ✅ Completada |
 | 1 | Modelo de datos (Prisma) | ✅ Completada |
 | 2 | API REST CRUD (álbumes y láminas) | ✅ Completada |
-| 3 | Interfaces web MVC + Bootstrap | ⬜ Pendiente |
+| 3 | Interfaces web MVC + Bootstrap | ✅ Completada |
 | 4 | Reglas de negocio (bulk, faltantes, repetidas) | ⬜ Pendiente |
 | 5 | Fotos de láminas | ⬜ Pendiente |
 | 6 | Documentación de consumo (API.md) | ⬜ Pendiente |
@@ -81,15 +81,17 @@ Plan de fases del proyecto **Sistema de Gestión de Colecciones de Láminas** (H
 
 **Objetivo:** vistas EJS del BRIEF §8.3 con el tema oscuro de `style.md`.
 
-- [ ] Partiales: `header.ejs`, `nav.ejs`, `footer.ejs` (con `data-bs-theme="dark"` y `app.css`).
-- [ ] Listado y detalle de álbumes (`albumes/listar.ejs`, `albumes/detalle.ejs`).
-- [ ] Formularios de álbum y lámina con PRG (`albumes/form.ejs`, `laminas/form.ejs`).
-- [ ] Listados de faltantes y repetidas (`laminas/faltantes.ejs`, `laminas/repetidas.ejs`).
-- [ ] Badges de estado y formulario de carga masiva (textarea JSON).
-- [ ] Cerrar el checklist de `style.md` §8 en cada vista.
+- [x] Partiales: `header.ejs`, `nav.ejs`, `footer.ejs` (con `data-bs-theme="dark"` y `app.css`).
+- [x] Listado y detalle de álbumes (`albumes/listar.ejs`, `albumes/detalle.ejs`).
+- [x] Formularios de álbum y lámina con PRG (`albumes/form.ejs`, `laminas/form.ejs`).
+- [x] Listados de faltantes y repetidas (`laminas/faltantes.ejs`, `laminas/repetidas.ejs`).
+- [x] Badges de estado y formulario de carga masiva (textarea JSON).
+- [x] Cerrar el checklist de `style.md` §8 en cada vista.
 
 **Cierre:** toda la web cumple `style.md` y comparte la lógica de la API.
 **Actualiza:** `README.md` · `roadmap.md`.
+
+> **Cierre verificado (2026-09-12):** recorrido completo en navegador (listado con tarjetas+tabla, detalle con badges Faltante/Única/Repetida ×N, alta/edición de álbum y lámina con PRG y mensajes `?ok=`, faltantes/repetidas con `cantidadRepetidas = cantidad − 1`, carga masiva por textarea con éxito y con duplicado → aviso "no se cargó ninguna" sin insertar). Tema oscuro de `style.md` implementado en `public/css/app.css` con `data-bs-theme="dark"`; `npm run build` y `npm test` (19) pasan; la API no cambió. La lógica derivada (estado, bulk transaccional) necesaria para las vistas se implementó ya en los models — los endpoints públicos `/api/.../bulk`, `/api/.../faltantes` y `/api/.../repetidas` quedan para la Fase 4.
 
 ---
 

@@ -1,0 +1,91 @@
+<%- include("../partials/header") %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h1 class="mb-1">Álbumes</h1>
+    <p class="text-muted mb-0">Gestioná tus álbumes y colecciones de láminas.</p>
+  </div>
+  <a class="btn btn-primary" href="/albumes/nuevo">Nuevo álbum</a>
+</div>
+
+<% if (typeof ok !== "undefined" && ok) { %>
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+  <%= ok %>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+</div>
+<% } %>
+
+<% if (albumes.length > 0) { %>
+
+<h2 class="h5">Tus álbumes</h2>
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
+  <% albumes.forEach((album) => { %>
+  <div class="col">
+    <div class="card h-100">
+      <% if (album.imagen) { %>
+      <img src="<%= album.imagen %>" class="card-img-top" alt="Portada de <%= album.nombre %>" style="max-height: 180px; object-fit: cover;">
+      <% } else { %>
+      <div class="card-img-top portada-placeholder" role="img" aria-label="Sin portada"></div>
+      <% } %>
+      <div class="card-body">
+        <h2 class="h6 mb-1"><%= album.nombre %></h2>
+        <p class="text-muted small mb-1"><%= album.tipoLaminas %> · <%= album.fechaLanzamiento %></p>
+        <div class="small text-muted-custom">
+          <span><%= album.totalLaminas %> láminas</span>
+          <span class="badge text-bg-danger ms-1"><%= album.faltantes %> faltantes</span>
+          <span class="badge text-bg-warning ms-1"><%= album.repetidas %> repetidas</span>
+        </div>
+      </div>
+      <div class="card-footer text-end">
+        <a class="btn btn-outline-secondary btn-sm" href="/albumes/<%= album.id %>">Ver</a>
+        <a class="btn btn-outline-secondary btn-sm" href="/albumes/<%= album.id %>/editar">Editar</a>
+      </div>
+    </div>
+  </div>
+  <% }) %>
+</div>
+
+<h2 class="h5 mt-4">Detalle</h2>
+<div class="table-responsive">
+  <table class="table table-striped align-middle">
+    <thead>
+      <tr>
+        <th scope="col">Nombre</th>
+        <th scope="col">Tipo de láminas</th>
+        <th scope="col">Lanzamiento</th>
+        <th scope="col" class="text-end">Láminas</th>
+        <th scope="col" class="text-end">Faltantes</th>
+        <th scope="col" class="text-end">Repetidas</th>
+        <th scope="col" class="text-end">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% albumes.forEach((album) => { %>
+      <tr>
+        <td>
+          <a href="/albumes/<%= album.id %>"><%= album.nombre %></a>
+          <% if (album.descripcion) { %><div class="small text-muted-custom"><%= album.descripcion %></div><% } %>
+        </td>
+        <td><%= album.tipoLaminas %></td>
+        <td><%= album.fechaLanzamiento %></td>
+        <td class="text-end"><%= album.totalLaminas %></td>
+        <td class="text-end"><%= album.faltantes %></td>
+        <td class="text-end"><%= album.repetidas %></td>
+        <td class="text-end">
+          <a class="btn btn-outline-secondary btn-sm" href="/albumes/<%= album.id %>/editar">Editar</a>
+          <form method="post" action="/albumes/<%= album.id %>/eliminar" class="d-inline"
+                onsubmit="return confirm('¿Eliminar el álbum \'<%= album.nombre %>\' y todas sus láminas?')">
+            <button type="submit" class="btn btn-outline-danger btn-sm" aria-label="Eliminar <%= album.nombre %>">Eliminar</button>
+          </form>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<% } else { %>
+<div class="alert alert-info" role="alert">Aún no hay álbumes. Creá el primero con el botón "Nuevo álbum".</div>
+<% } %>
+
+<%- include("../partials/footer") %>
