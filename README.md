@@ -128,6 +128,7 @@ Abrir en el navegador:
 │   └── generated/prisma/        # Cliente Prisma generado (no editar)
 ├── public/
 │   ├── css/app.css              # Tema oscuro (paleta de docs/style.md §2)
+│   ├── img/                      # Imágenes de prueba del seed: portada y cromo
 │   └── vendor/bootstrap/        # Assets de Bootstrap (`npm run bootstrap`)
 ├── uploads/                     # Fotos subidas de láminas (Fase 5; en gitignore)
 ├── scripts/

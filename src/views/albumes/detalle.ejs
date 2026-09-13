@@ -17,7 +17,9 @@
   <div class="row g-0">
     <div class="col-md-3">
       <% if (album.imagen) { %>
-      <img src="<%= album.imagen %>" class="img-fluid rounded" alt="Portada de <%= album.nombre %>" style="max-height: 220px; object-fit: cover;">
+      <img src="<%= album.imagen %>" class="img-fluid rounded" alt="Portada de <%= album.nombre %>" style="max-height: 220px; object-fit: contain;"
+           onerror="this.onerror=null;this.classList.add('d-none');this.nextElementSibling?.classList.remove('d-none');">
+      <div class="h-100 portada-placeholder d-none" role="img" aria-label="Sin portada"></div>
       <% } else { %>
       <div class="h-100 portada-placeholder" role="img" aria-label="Sin portada"></div>
       <% } %>
@@ -80,7 +82,9 @@
         <td><%= lamina.nombre %></td>
         <td>
           <% if (lamina.imagen) { %>
-          <img src="<%= lamina.imagen %>" alt="Foto de <%= lamina.nombre %>" class="img-thumbnail" style="width: 44px; height: 44px; object-fit: cover;">
+          <img src="<%= lamina.imagen %>" alt="Foto de <%= lamina.nombre %>" class="img-thumbnail" style="width: 44px; height: 44px; object-fit: cover;"
+               onerror="this.onerror=null;this.classList.add('d-none');this.nextElementSibling?.classList.remove('d-none');">
+          <span class="text-muted d-none" aria-label="Sin foto">—</span>
           <% } else { %>
           <span class="text-muted" aria-label="Sin foto">—</span>
           <% } %>

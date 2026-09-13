@@ -43,6 +43,9 @@
         <input type="url" class="form-control <%= errImagen.length ? "is-invalid" : "" %>" id="imagen" name="imagen"
                maxlength="500" value="<%= valor.imagen ?? "" %>" placeholder="https://…">
         <% errImagen.forEach((e) => { %><div class="invalid-feedback"><%= e.mensaje %></div><% }) %>
+        <img id="vistaPreviaImagen" src="<%= valor.imagen ?? "" %>" alt="Vista previa de la portada"
+             class="img-thumbnail" style="max-width: 180px; max-height: 180px; object-fit: contain; display: <%= valor.imagen ? "block" : "none" %>;">
+        <p class="text-muted small d-none" id="vistaPreviaFallo">La imagen no se pudo cargar: revisá que la URL apunte directo a un archivo de imagen (jpg, png, webp o gif).</p>
       </div>
       <div class="mb-3">
         <% const errDescripcion = erroresDe("descripcion"); %>
@@ -60,4 +63,31 @@
   </div>
 </form>
 
+<script>
+  // Vista previa en vivo de la URL de portada: muestra la imagen apenas se escribe
+  // y avisa si la URL no apunta a una imagen (en lugar de un icono roto).
+  const inputImagen = document.getElementById("imagen");
+  const vistaPrevia = document.getElementById("vistaPreviaImagen");
+  const avisoFallo = document.getElementById("vistaPreviaFallo");
+  if (inputImagen && vistaPrevia) {
+    inputImagen.addEventListener("input", () => {
+      const url = inputImagen.value.trim();
+      if (!url) {
+        vistaPrevia.style.display = "none";
+        avisoFallo.classList.add("d-none");
+        return;
+      }
+      vistaPrevia.src = url;
+      vistaPrevia.style.display = "block";
+    });
+    vistaPrevia.addEventListener("error", () => {
+      vistaPrevia.style.display = "none";
+      avisoFallo.classList.remove("d-none");
+    });
+    vistaPrevia.addEventListener("load", () => {
+      vistaPrevia.style.display = "block";
+      avisoFallo.classList.add("d-none");
+    });
+  }
+</script>
 <%- include("../partials/footer") %>

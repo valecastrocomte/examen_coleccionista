@@ -67,6 +67,9 @@
         <input type="url" class="form-control <%= errImagen.length ? "is-invalid" : "" %>" id="imagen" name="imagen"
                maxlength="500" value="<%= valor.imagen ?? "" %>" placeholder="https://…">
         <% errImagen.forEach((e) => { %><div class="invalid-feedback"><%= e.mensaje %></div><% }) %>
+      <img id="vistaPreviaLamina" src="<%= valor.imagen ?? "" %>" alt="Vista previa de la imagen"
+           class="img-thumbnail" style="max-width: 180px; max-height: 180px; object-fit: contain; display: <%= valor.imagen ? "block" : "none" %>;">
+      <p class="text-muted small d-none" id="vistaPreviaLaminaFallo">La imagen no se pudo cargar: revisá que la URL apunte directo a un archivo de imagen (jpg, png, webp o gif).</p>
       </div>
     </div>
   </div>
@@ -77,6 +80,32 @@
   </div>
 </form>
 
+<script>
+  // Vista previa en vivo de la URL de imagen (mismo mecanismo que el álbum).
+  const inputImagenLamina = document.getElementById("imagen");
+  const vistaPreviaLamina = document.getElementById("vistaPreviaLamina");
+  const avisoFalloLamina = document.getElementById("vistaPreviaLaminaFallo");
+  if (inputImagenLamina && vistaPreviaLamina) {
+    inputImagenLamina.addEventListener("input", () => {
+      const url = inputImagenLamina.value.trim();
+      if (!url) {
+        vistaPreviaLamina.style.display = "none";
+        avisoFalloLamina.classList.add("d-none");
+        return;
+      }
+      vistaPreviaLamina.src = url;
+      vistaPreviaLamina.style.display = "block";
+    });
+    vistaPreviaLamina.addEventListener("error", () => {
+      vistaPreviaLamina.style.display = "none";
+      avisoFalloLamina.classList.remove("d-none");
+    });
+    vistaPreviaLamina.addEventListener("load", () => {
+      vistaPreviaLamina.style.display = "block";
+      avisoFalloLamina.classList.add("d-none");
+    });
+  }
+</script>
 <%- include("../partials/footer") %>
 
 <% if (modo === "editar") { %>
@@ -84,7 +113,9 @@
   <div class="card-header">Foto de la lámina</div>
   <div class="card-body">
     <% if (valor.imagen) { %>
-    <img src="<%= valor.imagen %>" alt="Foto de <%= valor.nombre %>" class="img-thumbnail mb-3" style="max-width: 180px; max-height: 180px; object-fit: cover;">
+    <img src="<%= valor.imagen %>" alt="Foto de <%= valor.nombre %>" class="img-thumbnail mb-3" style="max-width: 180px; max-height: 180px; object-fit: contain;"
+         onerror="this.onerror=null;this.classList.add('d-none');this.nextElementSibling?.classList.remove('d-none');">
+    <p class="text-muted mb-2 d-none">No se pudo cargar la imagen.</p>
     <% } else { %>
     <p class="text-muted mb-2">Esta lámina todavía no tiene foto.</p>
     <% } %>

@@ -22,14 +22,14 @@ async function main() {
   await prisma.album.create({
     data: {
       nombre: "Copa Mundial 2026",
-      imagen: "https://ejemplo.com/portada-mundial-2026.png",
+      imagen: "/public/img/copa-mundial-2026.png",
       fechaLanzamiento: new Date("2026-06-14"),
       tipoLaminas: "Fútbol",
       descripcion: "Álbum oficial del Mundial 2026: selecciones y figuras.",
       laminas: {
         create: [
           { numero: 1, nombre: "Lionel Messi", tipo: "EPICA", cantidad: 0 },
-          { numero: 2, nombre: "Diego Maradona", tipo: "LEGENDARIA", cantidad: 3 },
+          { numero: 2, nombre: "Diego Maradona", tipo: "LEGENDARIA", cantidad: 3, imagen: "/public/img/maradona.png" },
           { numero: 3, nombre: "Ángel Di María", tipo: "RARA", cantidad: 1 },
           { numero: 4, nombre: "Emiliano Martínez", tipo: "COMUN", cantidad: 2 },
           { numero: 5, nombre: "Julián Álvarez", tipo: "COMUN", cantidad: 0 },

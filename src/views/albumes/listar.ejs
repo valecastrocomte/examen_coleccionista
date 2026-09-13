@@ -23,7 +23,9 @@
   <div class="col">
     <div class="card h-100">
       <% if (album.imagen) { %>
-      <img src="<%= album.imagen %>" class="card-img-top" alt="Portada de <%= album.nombre %>" style="max-height: 180px; object-fit: cover;">
+      <img src="<%= album.imagen %>" class="card-img-top" alt="Portada de <%= album.nombre %>" style="max-height: 180px; object-fit: contain;"
+           onerror="this.onerror=null;this.classList.add('d-none');this.nextElementSibling?.classList.remove('d-none');">
+      <div class="card-img-top portada-placeholder d-none" role="img" aria-label="Sin portada"></div>
       <% } else { %>
       <div class="card-img-top portada-placeholder" role="img" aria-label="Sin portada"></div>
       <% } %>
